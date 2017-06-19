@@ -11,6 +11,7 @@ class Admin extends Admin_Controller
     function __construct()
     {
         parent::__construct();
+        
     }
 
     function index() {
@@ -20,26 +21,20 @@ class Admin extends Admin_Controller
 
     function inbox() {
         $data['title'] = 'DATA INBOX SMS';
-        $data['extra_header'] = '<link rel="stylesheet"type="text/css" href="'.base_url().'plugins/dTables/media/css/dataTables.bootstrap.css" />';
-        $data['extra_header'] = '<script type="text/javascript" src="'.base_url().'plugins/dTables/media/js/jquery.dataTables.min.js"></script>';
+//        $data['extra_header'] = '<link rel="stylesheet"type="text/css" href="'.base_url().'plugins/dTables/media/css/dataTables.bootstrap.css" />';
+//        $data['extra_header'] = '<script type="text/javascript" src="'.base_url().'plugins/dTables/media/js/jquery.dataTables.min.js"></script>';
         //
         
-        themes('admin','message/admin_message_view', $data);
+        themes('admin','message/admin_message_in_view', $data);
     }
 
     function outbox() {
         $data['title'] = 'DATA OUTBOX SMS';
-        $data['extra_header'] = '<link rel="stylesheet" href="'.base_url().'plugins/dTables/media/css/dataTables.bootstrap.css">';
+        //$data['extra_header'] = '<link rel="stylesheet" href="'.base_url().'plugins/dTables/media/css/dataTables.bootstrap.css">';
         // $data['extra_header'] .= '<script type="text/javascript" src="'.base_url().'plugins/dTables/media/js/">';
 
-        $data['extra_header'] .= '<link rel="stylesheet" type="text/css" href="'.base_url().'plugins/dTables/extensions/responsive/css/responsive.bootstrap.css">';
-        $data['extra_header'] .= '<script type="text/javascript" language="javascript" src="'.base_url().'plugins/dTables/extensions/responsive/js/dataTables.responsive.min.js"></script>
-        ';
-
-        $data['extra_footer'] = '<script type="text/javascript" src="'.base_url().'plugins/dTables/media/js/jquery.dataTables.min.js"></script>';
-        $data['extra_footer'] = '<script type="text/javascript" src="'.base_url().'plugins/jQuery/jquery-3.2.1.min.js"></script>';
-
-        themes('admin','message/admin_message_view', $data);
+       
+        themes('admin','message/admin_message_out_view', $data);
 
     }
 
@@ -95,4 +90,92 @@ class Admin extends Admin_Controller
 
         echo json_encode($json_data);
     }
+    
+    
+
+    function datatables_inbox()
+    {
+    	/** AJAX Handle */
+    	if(
+    		isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+    		!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+    		strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
+    		)
+    	{
+            
+            $this->load->model('message/Message_model');
+            
+    		
+    		/**
+    		 * Mengambil Parameter dan Perubahan nilai dari setiap 
+    		 * aktifitas pada table
+    		 */
+            $datatables  = $_POST;
+            $datatables['table']    = 'message_in';
+    		$datatables['id-table'] = 'id';
+
+            /**
+             * Kolom yang ditampilkan
+             */
+	    	$datatables['col-display'] = array(
+            	    		               'sender',
+            	    		               'content',
+            	    		               'in_datetime',
+            	    		               'readed',
+            	    		               'read_count'
+            	    		             );
+
+            /**
+             * menggunakan table join
+             */
+            //$datatables['join']    = 'INNER JOIN position ON position = id_position';
+
+	    	$this->Message_model->Inbox($datatables);
+    	}
+
+    	return;
+    }
+    function datatables_outbox()
+    {
+    	/** AJAX Handle */
+    	if(
+    		isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+    		!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+    		strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
+    		)
+    	{
+            
+            $this->load->model('message/Message_model');
+            
+    		
+    		/**
+    		 * Mengambil Parameter dan Perubahan nilai dari setiap 
+    		 * aktifitas pada table
+    		 */
+            $datatables  = $_POST;
+            $datatables['table']    = 'message_out';
+    		$datatables['id-table'] = 'id';
+
+            /**
+             * Kolom yang ditampilkan
+             */
+	    	$datatables['col-display'] = array(
+            	    		               'receiver',
+            	    		               'content',
+            	    		               'out_datetime',
+            	    		               'status',
+            	    		               'out_type'
+            	    		             );
+
+            /**
+             * menggunakan table join
+             */
+            //$datatables['join']    = 'INNER JOIN position ON position = id_position';
+
+	    	$this->Message_model->Inbox($datatables);
+    	}
+
+    	return;
+    }
+    
 }
