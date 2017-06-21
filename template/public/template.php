@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <!-- META SECTION -->
-        <title>Home - Sistem Informasi Pengaduan</title>
+        <title>Sistem Informasi Pengaduan</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -40,13 +40,13 @@
             <!-- START X-NAVIGATION VERTICAL -->
             <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
                 <li>
-                    <a href="#">Home</a>                        
+                    <a href="<?php echo base_url()?>page/home">Home</a>                        
                 </li>
                 <li>
-                    <a href="#">Tentang Kami</a>
+                    <a href="<?php echo base_url()?>page/about_us">Tentang Kami</a>
                 </li>
                 <li>
-                    <a href="#">Kontak Kami</a>                     
+                    <a href="<?php echo base_url()?>page/contact_us">Kontak Kami</a>                     
                 </li>
             </ul>
             <!-- END X-NAVIGATION VERTICAL -->                     
@@ -60,36 +60,14 @@
 
                 <div class="row">
 
-                    <div class="col-md-12">
-                        <div class="panel-heading">
-                            <div class="panel-title-box">
-                                <h3>Pengaduan SMS</h3>
-                            </div>                                    
-                        </div>  
-                    </div>
-                    <div class="col-md-12">
-
-                        <!-- START USERS ACTIVITY BLOCK -->
-                        <div class="panel panel-default">
-
-                            <?php $this->load->view($content_view); ?>
-                        </div>
-
-                    </div>
-
+                    
+                    <?php $this->load->view($content_view); ?>
 
                 </div>
             </div>
 
         </div>
-        <!-- END MESSAGE BOX-->
-
-        <!-- START PRELOADS -->
-        <!-- <audio id="audio-alert" src="audio/alert.mp3" preload="auto"></audio>
-        <audio id="audio-fail" src="audio/fail.mp3" preload="auto"></audio> -->
-        <!-- END PRELOADS -->
-
-        <!-- START SCRIPTS -->
+     
 
 
         <!-- START THIS PAGE PLUGINS-->
