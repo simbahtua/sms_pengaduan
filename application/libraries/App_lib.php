@@ -46,9 +46,6 @@ class App_lib
             $limit
         ";
 
-        die($sql);
-
-
         $query = $this->CI->db->query($sql);
         $total = $this->CI->db->query('SELECT FOUND_ROWS() as total')->row()->total;
         $output['data'] = $query;

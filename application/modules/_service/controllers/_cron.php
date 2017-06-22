@@ -11,19 +11,32 @@ class _cron extends MY_Controller
     function __construct()
     {
         parent::__construct();
+        $this->date = date('Y-m-d');
     }
 
-    // function getInbox() {
-    //     $params['command'] = 'inboxgetbydate';
-    //     $params['from'] = '2017-06-19';
-    //     $params['to'] = '2017-06-19';
-    //     $params['status'] = 'all';
-    //     $inbox = $this->app_lib->zenziva_service($params);
-    //
-    //     $this->save_inbox($inbox);
-    // }
+    /* FUnction getInbox
+    * untuk mengambil semua data inbox message dari server zenziva_service
+    * params $status default 'all' => nilai status = all , unread, read
+    * Params start_date & end_date untuk range tanggal data sms yang akan di ambil
+    */
+    function getInbox($status = 'all', $start_date = '', $end_date ='') {
+        if ($start_date == '') {
+            $start_date = $end_date = $this->date;
+        }
+        $params['command'] = 'inboxgetbydate';
+        $params['from'] = $start_date;
+        $params['to'] = $end_date;
+        $params['status'] = 'all';
+        $inbox = $this->app_lib->zenziva_service($params);
+        // echo '<pre>';
+        // print_r($inbox);
 
-    //get all un-read message
+        $this->save_inbox($inbox);
+    }
+
+    /*
+    * function read_inbox digunakan untuk mengambil sms dari servis zenziva yang statusnya belum dibaca
+    */
     function read_inbox() {
         $params['command'] = 'readsms';
         $inbox = $this->app_lib->zenziva_service($params);
@@ -32,29 +45,34 @@ class _cron extends MY_Controller
         }else {
             $this->save_inbox($inbox);
         }
-
     }
 
 
-    // fungsi simpa sms yang baru
+    // fungsi simpan sms yang baru
     function save_inbox($data=array()) {
 
         if (! empty($data)) {
 
             foreach ($data->message as $row) {
                 $insert_data = array();
-                // $is_valid = false;
+                $message_content = $row->isiPesan;
+
                 $is_valid_format = 0;
                 if( preg_match('#aduan#',$row->isiPesan)) {
                     $is_valid = true;
                     $insert_data['in_type'] = 1;
+                    $table = 'message_in';
+                    $message_content = preg_replace('/#aduan#/', '', $message_content);
+                } else {
+                    $table = 'message_spam';
                 }
+
                 $insert_data['inbox_id'] = $row->id;
                 $insert_data['sender'] = $row->dari;
                 $insert_data['in_datetime'] = $row->tgl . ' '. $row->waktu;
-                $insert_data['content'] = $row->isiPesan;
+                $insert_data['content'] = $message_content;
 
-                $inbox_id = $this->db->insert('message_in', $insert_data);
+                $inbox_id = $this->db->insert($table, $insert_data);
 
             }
         }
