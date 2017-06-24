@@ -19,7 +19,7 @@
         <!-- END PLUGINS -->
         <!-- EOF CSS INCLUDE -->
 
-        <?php 
+        <?php
             if (isset($extra_header)) {
                 echo $extra_header;
             }
@@ -58,10 +58,10 @@
                         <a href="<?php echo base_url('admin/dashboard')?>"><span class="fa fa-home"></span> <span class="xn-text">Dashboard</span></a>
                     </li>
                     <li>
-                        <a href="<?php echo base_url('admin/message/inbox')?>"><span class="fa fa-envelope"></span> <span class="xn-text">INBOX</span></a>
+                        <a href="<?php echo base_url('admin/sms/inbox')?>"><span class="fa fa-envelope"></span> <span class="xn-text">INBOX</span></a>
                     </li>
                     <li>
-                        <a href="<?php echo base_url('admin/message/outbox')?>"><span class="fa fa-envelope-open"></span> <span class="xn-text">OUTBOX</span></a>
+                        <a href="<?php echo base_url('admin/sms/outbox')?>"><span class="fa fa-envelope-open"></span> <span class="xn-text">OUTBOX</span></a>
                     </li>
 
                 </ul>
@@ -191,5 +191,11 @@
         <!-- <script type="text/javascript" src="<?php echo $themes_url;?>js/demo_dashboard.js"></script> -->
         <!-- END TEMPLATE -->
     <!-- END SCRIPTS -->
+
+    <?php
+        if (isset($extra_footer)) {
+            echo $extra_footer;
+        }
+    ?>
     </body>
 </html>

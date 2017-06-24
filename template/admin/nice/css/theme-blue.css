@@ -1,17 +1,17 @@
 @charset "UTF-8";
-
+/**/
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,300,500,600,700&subset=latin,latin-ext);
 @import "jquery/jquery-ui.min.css";
 @import "bootstrap/bootstrap.min.css";
 @import "fontawesome/font-awesome.min.css";
-/*@import "summernote/summernote.css";*/
-/*@import "codemirror/codemirror.css";*/
-/*@import "nvd3/nv.d3.css";*/
+/*@import "summernote/summernote.css";
+@import "codemirror/codemirror.css";
+@import "nvd3/nv.d3.css";*/
 @import "mcustomscrollbar/jquery.mCustomScrollbar.css";
 /*@import "fullcalendar/fullcalendar.css";*/
 /*@import "blueimp/blueimp-gallery.min.css";*/
-/*@import "rickshaw/rickshaw.css";*/
-/*@import "dropzone/dropzone.css";*/
+/*@import "rickshaw/rickshaw.css";
+@import "dropzone/dropzone.css";*/
 @import "animate/animate.min.css";
 
 /* PREDEFINED CLASSES */
@@ -102,7 +102,8 @@ body {
   width: 50px;
 }
 .page-container .page-content {
-  min-height: 100%;
+  /*min-height: 100%;*/
+  min-height: 594px;
   margin-left: 220px;
   background: #f5f5f5 url('../img/bg.png') left top repeat;
   position: relative;
@@ -2225,12 +2226,14 @@ input[type=checkbox] {
 }
 .form-control[disabled],
 .form-control[readonly] {
-  color: #CCC;
+  /*color: #CCC;*/
+  color : #211F1F;
 }
 .form-control[disabled]:focus,
 .form-control[readonly]:focus {
   background: #EEE;
-  color: #CCC;
+  /*color: #CCC;*/
+  color : #211F1F;
   border-color: #D5D5D5;
 }
 .input-group-addon {
@@ -3132,7 +3135,7 @@ blockquote.pull-right {
   margin: 7px 0px 8px;
 }
 /* EOF TABLES */
-/* Datatables */
+ /*Datatables */
 .dataTable {
   float: left;
   border-bottom: 1px solid #E5E5E5 !important;
@@ -3146,7 +3149,7 @@ blockquote.pull-right {
   float: left;
   width: 100%;
 }
-.dataTables_length {
+/*.dataTables_length {
   width: 50%;
   float: left;
   padding: 0px 0px 5px;
@@ -3181,7 +3184,7 @@ blockquote.pull-right {
   width: 150px;
   display: inline;
   margin-left: 5px;
-}
+}*/
 td.dataTables_empty {
   font-size: 11px;
   text-align: center;
@@ -3246,7 +3249,7 @@ td.dataTables_empty {
   position: relative;
   cursor: pointer;
 }
-.sorting:before,
+/*.sorting:before,
 .sorting_desc:before,
 .sorting_asc:before {
   float: right;
@@ -3272,7 +3275,7 @@ td.dataTables_empty {
 .sorting_desc_disabled:before {
   opacity: 0.1;
   filter: alpha(opacity = 10);
-}
+}*/
 /* eof Datatables */
 /* icons-list */
 .icons-list {
