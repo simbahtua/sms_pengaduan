@@ -107,14 +107,12 @@ class _cron extends MY_Controller {
         $q_params['select'] = 'z_outbox_id';
         $q_params['where_detail'] = 'status = "sending"';
         $progress_message = $this->app_lib->get_query_data($q_params);
-        echo '<pre>';
         if ($progress_message['total'] > 0) {
             foreach ($progress_message['data']->result() as $row) {
                 $data = array();
                 $param['command'] = 'report';
                 $param['id'] = $row->z_outbox_id;
                 $resp = $this->app_lib->zenziva_service($param);
-                print_r($resp);
                 if(!empty($resp->message->status)) {
                     $data['status'] = $resp->message->status;
                     $this->db->where('z_outbox_id', $param['id']);
