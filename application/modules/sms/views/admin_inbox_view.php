@@ -239,7 +239,6 @@
             $('#in_id').val(messageID);
             $('#notes').val(notes);
             $('#out_type').val('reply');
-//            alert(messageID);
 
             status = 'readed';
             updateInbox(messageID, status);
@@ -280,7 +279,7 @@
             $.ajax({
                 type: 'POST',
                 url: '<?php echo base_url('service/updateInboxStatus'); ?>',
-                data: 'message_id= ' + id + 'status=' + status,
+                data: 'message_id= ' + id + '&status=' + status,
                 dataType: 'json',
                 async: false,
             });
