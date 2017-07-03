@@ -1,3 +1,22 @@
+<style type="text/css">
+    thead tr th .center {
+        text-align: center;
+    }
+    tbody tr td .center {
+        text-align: center;
+    }
+    tfoot {
+        display: table-header-group;
+    }
+
+
+    .modal-body{
+        /*height: 250px;*/
+        overflow-y: auto;
+    }
+</style>
+
+
 <div class="page-content-wrap">
     <div class="row">
         <div class="col-md-12">
@@ -8,8 +27,9 @@
                     <h2 class="panel-title"><span class="fa fa-envelope"></span> <?php echo $title; ?></h2>
                     <ul class="panel-controls">
                          <!-- <li><a href="#" class="panel-collapse"><span class="fa fa-angle-down"></span></a></li> -->
-                        <li><button class="button panel-refresh"><span class="fa fa-refresh"></span></button></li>
-                        <!-- <li><a href="#" class="panel-remove"><span class="fa fa-times"></span></a></li> -->
+                         <li><button class="button panel-refresh" data-toggle="tooltip" data-placement="top" title="Refresh"><span class="fa fa-refresh"></span></button></li>
+
+                         <li><button class="button clear-filter" data-toggle="tooltip" data-placement="top" title="Clear Filter"><span class="fa fa-times"></span></button></li>
                     </ul>
                 </div>
                 <div class="panel-body">
@@ -27,7 +47,7 @@
                             <tfoot>
                                 <tr>
                                     <th><input  readonly="readonly" type="text" id="5" class="form-control datepicker" size="12" placeholder="Cari Tanggal"></th>
-                                    <th class="input_text">Pengirim</th>
+                                    <th class="input_text">Penerima</th>
                                     <th class="input_text">Isi Pesan</th>
                                     <th class="input_text">Keterangan</th>
                                     <th class="input_select" id='sending_status'>Status</th>
@@ -52,7 +72,7 @@
             var inp = '<input type="text" class="form-control" size="12" placeholder="Cari ' + title + '" />';
             $(this).html(inp);
         });
-        $("#example #sending_status").html('<select class="form-control" wodth="10" > <option value="def" disabled selected>STATUS</option> <option value="sending">Proses</option><option value="sent">Terkirim</option><option value="failed">Gagal</option></select>');
+        $("#example #sending_status").html('<select class="form-control" wodth="10" id="opt-status"> <option value="def" disabled selected>STATUS</option> <option value="processing">Proses</option><option value="sent">Terkirim</option><option value="failed">Gagal</option></select>');
 
         var table = $("#example").DataTable({
             responsive: true,
@@ -147,4 +167,43 @@
             autoclose: true
         });
     });
+
+    $(".clear-filter").on('click', function () {
+        clear_filter();
+
+    });
+
+    function clear_filter() {
+        var panel = $(".panel-refresh").parents(".panel");
+
+        var table = $("#example").DataTable();
+        panel_refresh(panel);
+        setTimeout(function () {
+            panel_refresh(panel);
+            $('input[type="text"]').val('');
+            $('#opt-status').val('def');
+            table.search('').columns().search('').draw();
+        }, 5000);
+    }
+</script>
+
+<script>
+
+    $(document).ready(function () {
+        setInterval(function () {
+            check_outbox();
+        }, 25000);
+        $.ajaxSetup({cache: false});
+    });
+
+
+    function check_outbox() {
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo base_url('service/check_outbox_status'); ?>',
+            data: form_data,
+            dataType: 'json',
+            async: false,
+        });
+    }
 </script>

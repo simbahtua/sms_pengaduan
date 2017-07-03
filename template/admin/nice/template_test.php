@@ -10,19 +10,30 @@
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <!-- END META SECTION -->
 
+        <!-- BEGIN GLOBAL MANDATORY STYLES -->
+       <link type="text/css" rel="stylesheet" href="<?php echo $themes_url; ?>/css/fontawesome/font-awesome.min.css" />
+       <link type="text/css" rel="stylesheet" href="<?php echo $themes_url; ?>/css/bootstrap/bootstrap.min.css" />
+       <!-- END GLOBAL MANDATORY STYLES -->
+
         <!-- CSS INCLUDE -->
-        <link rel="stylesheet" type="text/css" id="theme" href="<?php echo $themes_url; ?>css/theme-blue.css"/>
+        <link type="text/css" rel="stylesheet" href="<?php echo base_url('plugins/jquery/css/jquery-ui.min.css'); ?>" />
+        <link type="text/css" rel="stylesheet" href="<?php echo base_url('plugins/jquery/css/jquery-ui.theme.min.css'); ?>" />
+        <link rel="stylesheet" type="text/css" id="theme" href="<?php echo $themes_url;?>css/custom.css"/>
+        <!-- @import "mcustomscrollbar/jquery.mCustomScrollbar.css"; -->
         <!-- START PLUGINS -->
-        <script type="text/javascript" src="<?php echo $themes_url; ?>js/plugins/jquery/jquery.min.js"></script>
-        <script type="text/javascript" src="<?php echo $themes_url; ?>js/plugins/jquery/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="<?php echo $themes_url; ?>js/plugins/bootstrap/bootstrap.min.js"></script>
+        <!-- <script type="text/javascript" src="<?php echo $themes_url;?>js/plugins/jquery/jquery.min.js"></script>
+        <script type="text/javascript" src="<?php echo $themes_url;?>js/plugins/jquery/jquery-ui.min.js"></script> -->
+        <script type="text/javascript" src="<?php echo base_url('plugins/jquery/jquery-3.2.1.min.js');?>"></script>
+        <script type="text/javascript" src="<?php echo base_url('plugins/jquery/jquery-ui.min.js');?>"></script>
+        <!-- <script type="text/javascript" src="<?php echo $themes_url;?>js/plugins/bootstrap/bootstrap.min.js"></script> -->
+        <script src="<?php echo base_url('assets/js/bootstrap.min.js'); ?>"></script>
         <!-- END PLUGINS -->
         <!-- EOF CSS INCLUDE -->
 
         <?php
-        if (isset($extra_header)) {
-            echo $extra_header;
-        }
+            if (isset($extra_header)) {
+                echo $extra_header;
+            }
         ?>
 
     </head>
@@ -31,42 +42,41 @@
         <div class="page-container">
 
             <!-- START PAGE SIDEBAR -->
-            <div class="page-sidebar  page-navigation-toggled page-container-wide">
+            <div class="page-sidebar">
                 <!-- START X-NAVIGATION -->
                 <ul class="x-navigation">
                     <li class="xn-logo">
-                        <a href="#">SMS ADUAN</a>
-                        <a href="#" class="x-navigation-control"></a>
-                    </li>
+                       <a href="index.html">SMS ADUAN</a>
+                       <a href="#" class="x-navigation-control"></a>
+                   </li>
                     <li class="xn-profile">
                         <a href="#" class="profile-mini">
-                            <img src="<?php echo base_url('assets/images/users/avatar.jpg'); ?>" alt="John Doe"/>
+                            <img src="<?php echo base_url('assets/images/users/avatar.jpg');?>" alt="John Doe"/>
                         </a>
                         <div class="profile">
                             <div class="profile-image">
-                                <img src="<?php echo base_url('assets/images/users/avatar.jpg'); ?>" alt="John Doe"/>
+                                <img src="<?php echo base_url('assets/images/users/avatar.jpg');?>" alt="John Doe"/>
                             </div>
                             <div class="profile-data">
-                                <!-- <div class="profile-data-name">John Doe</div>
-                                <div class="profile-data-title">Web Developer/Designer</div> -->
+                                <div class="profile-data-name">John Doe</div>
+                                <div class="profile-data-title">Web Developer/Designer</div>
                             </div>
                             <div class="profile-controls">
-                                <!-- <a href="pages-profile.html" class="profile-control-left"><span class="fa fa-info"></span></a>
-                                <a href="pages-messages.html" class="profile-control-right"><span class="fa fa-envelope"></span></a> -->
+                                <a href="pages-profile.html" class="profile-control-left"><span class="fa fa-info"></span></a>
+                                <a href="pages-messages.html" class="profile-control-right"><span class="fa fa-envelope"></span></a>
                             </div>
                         </div>
                     </li>
                     <li class="xn-title">MENU ADMIN</li>
-                    <li>
-                        <a href="<?php echo base_url('admin/dashboard') ?>"><span class="fa fa-home" data-toggle="tooltip" data-placement="right" title="DASHBOARD"></span> <span class="xn-text">Dashboard</span></a>
+                    <li class="active">
+                        <a href="<?php echo base_url('admin/dashboard')?>"><span class="fa fa-home"></span> <span class="xn-text">Dashboard</span></a>
                     </li>
                     <li>
-                        <a href="<?php echo base_url('admin/sms/inbox') ?>"><span class="fa fa-envelope" data-toggle="tooltip" data-placement="right" title="INBOX" ></span> <span class="xn-text">INBOX</span></a>
+                        <a href="<?php echo base_url('admin/message/inbox')?>"><span class="fa fa-envelope"></span> <span class="xn-text">INBOX</span></a>
                     </li>
                     <li>
-                        <a href="<?php echo base_url('admin/sms/outbox') ?>"><span class="glyphicon glyphicon-send" data-toggle="tooltip" data-placement="right" title="OUTBOX"></span> <span class="xn-text">OUTBOX</span></a>
+                        <a href="<?php echo base_url('admin/message/outbox')?>"><span class="fa fa-envelope-open"></span> <span class="xn-text">OUTBOX</span></a>
                     </li>
-
 
                 </ul>
                 <!-- END X-NAVIGATION -->
@@ -136,30 +146,14 @@
 
                 <!-- START BREADCRUMB -->
                 <ul class="breadcrumb">
-                    <?php
-                    if (isset($breadcrumps)) {
-                        if (is_array($breadcrumps)) {
-                            $i = 0;
-                            foreach ($breadcrumps as $breadcrumps_title => $breadcrumps_links) {
-                                if ($breadcrumps_links != '#') {
-                                    $breadcrumps_links = base_url() . $breadcrumps_links;
-                                }
-                                if ($i == count($breadcrumps)) {
-                                    echo '<li class="active">' . $breadcrumps_title . '</li>';
-                                } else {
-                                    echo '<li><a href="' . $breadcrumps_links . '">' . $breadcrumps_title . '</a></li>';
-                                }
-                                $i++;
-                            }
-                        }
-                    }
-                    ?>
+                    <li><a href="#">Home</a></li>
+                    <li class="active">Dashboard</li>
                 </ul>
                 <!-- END BREADCRUMB -->
 
                 <!-- PAGE CONTENT WRAPPER -->
                 <div class="page-content-wrap">
-                    <?php $this->load->view($content_view); ?>
+                <?php $this->load->view($content_view);?>
 
                 </div>
                 <!-- END PAGE CONTENT WRAPPER -->
@@ -179,7 +173,7 @@
                     </div>
                     <div class="mb-footer">
                         <div class="pull-right">
-                            <a href="<?php echo base_url('logout'); ?>" class="btn btn-success btn-lg">Yes</a>
+                            <a href="<?php echo base_url('logout');?>" class="btn btn-success btn-lg">Yes</a>
                             <button class="btn btn-default btn-lg mb-control-close">No</button>
                         </div>
                     </div>
@@ -193,59 +187,28 @@
         <audio id="audio-fail" src="audio/fail.mp3" preload="auto"></audio> -->
         <!-- END PRELOADS -->
 
-        <!-- START SCRIPTS -->
+    <!-- START SCRIPTS -->
 
 
         <!-- START THIS PAGE PLUGINS-->
-        <!-- <script type='text/javascript' src='<?php echo $themes_url; ?>js/plugins/icheck/icheck.min.js'></script> -->
-        <script type="text/javascript" src="<?php echo $themes_url; ?>js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js"></script>
-        <script type="text/javascript" src="<?php echo $themes_url; ?>js/plugins/scrolltotop/scrolltopcontrol.js"></script>
+        <!-- <script type='text/javascript' src='<?php echo $themes_url;?>js/plugins/icheck/icheck.min.js'></script> -->
+        <script type="text/javascript" src="<?php echo $themes_url;?>js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js"></script>
+        <script type="text/javascript" src="<?php echo $themes_url;?>js/plugins/scrolltotop/scrolltopcontrol.js"></script>
         <!-- END THIS PAGE PLUGINS-->
 
         <!-- START TEMPLATE -->
 
 
-        <script type="text/javascript" src="<?php echo $themes_url; ?>js/plugins.js"></script>
-        <script type="text/javascript" src="<?php echo $themes_url; ?>js/actions.js"></script>
+        <script type="text/javascript" src="<?php echo $themes_url;?>js/plugins.js"></script>
+        <script type="text/javascript" src="<?php echo $themes_url;?>js/actions.js"></script>
 
-        <!-- <script type="text/javascript" src="<?php echo $themes_url; ?>js/demo_dashboard.js"></script> -->
+        <!-- <script type="text/javascript" src="<?php echo $themes_url;?>js/demo_dashboard.js"></script> -->
         <!-- END TEMPLATE -->
-        <!-- END SCRIPTS -->
-
-        <script>
-            $(document).ready(function () {
-                setInterval(function () {
-                    get_new_message();
-                }, 25000);
-
-                setInterval(function () {
-                    check_outbox();
-                }, 25000);
-                $.ajaxSetup({cache: false});
-            });
-
-            function get_new_message() {
-                $.ajax({
-                    type: 'POST',
-                    url: '<?php echo base_url(); ?>_service/_cron/read_inbox',
-                    dataType: 'json',
-                });
-            }
-
-            function check_outbox() {
-                $.ajax({
-                    type: 'POST',
-                    url: '<?php echo base_url('service/check_outbox_status'); ?>',
-                    dataType: 'json',
-                });
-            }
-
-        </script>
-
+    <!-- END SCRIPTS -->
         <?php
-        if (isset($extra_footer)) {
-            echo $extra_footer;
-        }
+            if (isset($extra_footer)) {
+                echo $extra_footer;
+            }
         ?>
     </body>
 </html>

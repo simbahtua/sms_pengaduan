@@ -14,12 +14,14 @@ class Admin extends Admin_Controller
     }
 
     function index() {
-        
-        // echo 'OK';
-        // print_r($this->session->userdata());
-        // die;
-        $data = array();
 
+        $data['breadcrumps'] = array(
+            'Dashboard' => 'admin/dashboard',
+        );
+
+        $data['extra_footer'] = '<script type="text/javascript" src="'.base_url().'plugins/owl/owl.carousel.min.js"></script>';
         themes('admin','dashboard/dashboard_main_view', $data);
     }
+
+
 }

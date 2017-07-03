@@ -2,11 +2,21 @@
     thead tr th .center {
         text-align: center;
     }
-
+    tbody tr td .center {
+        text-align: center;
+    }
     tfoot {
         display: table-header-group;
     }
+
+
+    .modal-body{
+        /*height: 250px;*/
+        overflow-y: auto;
+    }
 </style>
+
+
 <div class="modal fade modal-sms" id="replysms" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -28,15 +38,18 @@
                                 </div>
 
                                 <div class="panel-body">
-                                    <input type="hidden" name='receiver' id='receiver' value=''>
-                                    <input type="hidden" name='in_id' id='in_id' value=''>
-                                    <input type="hidden" name='notes' id='notes' value=''>
-                                    <input type="hidden" name='out_type' id='out_type' value=''>
+                                    <input type="hidden" name='receiver' class='receiver' value=''>
+                                    <input type="hidden" name='in_id' class='in_id' value=''>
+                                    <input type="hidden" name='notes' class='notes' value=''>
+                                    <input type="hidden" name='out_type' class='out_type' value='reply'>
+                                    <input type="hidden" name='indate' class='indate' value=''>
+                                    <input type="hidden" name='replied' class='replied' value=''>
+                                    <input type="hidden" name='responded' class='responded' value=''>
 
                                     <div class="form-group">
                                         <label class="col-md-3 col-xs-12 control-label">ISI PESAN</label>
-                                        <div class="col-md-6 col-xs-12">
-                                            <textarea class="form-control" rows="5" name='content' id='content'></textarea>
+                                        <div class="col-md-9 col-xs-12">
+                                            <textarea class="form-control input-content" rows="5" name='content' id='content'></textarea>
                                             <span class="help-block"></span>
                                         </div>
                                     </div>
@@ -57,19 +70,103 @@
     </div>
 </div>
 
+<div class="modal fade modal-sms" id="respond-sms" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="background-image: none !important;"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <div class="message_content">
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <form class="form-horizontal" action="#" id="form-respond" method="POST" enctype="multipart/form-data">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title"><strong>FORM TINDAK LANJUT ADUAN SMS</h4>
+                                </div>
+                                <div class="panel-body">
+                                    <input type="hidden" name='receiver' class='receiver' value=''>
+                                    <input type="hidden" name='in_id' class='in_id' value=''>
+                                    <input type="hidden" name='notes' class='notes' value=''>
+                                    <input type="hidden" name='out_type' class='out_type' value='respond'>
+                                    <input type="hidden" name='indate' class='indate' value=''>
+                                    <input type="hidden" name='replied' class='replied' value=''>
+                                    <input type="hidden" name='responded' class='responded' value=''>
+
+                                    <div class="form-group">
+                                        <label class="col-md-3 col-xs-12 control-label">Kirim SMS</label>
+                                        <div class="col-md-4 col-xs-12">
+                                            <label class="switch">
+                                                <input class="switch" name="is_sms" id="is_sms" value="0"  type="checkbox">
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-5 col-xs-12">
+                                            <span class="help-block">Kirim SMS Respons</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group ta-content">
+                                    </div>
+
+                                    <div class="form-group" id='respond-aduan'>
+                                        <label class="col-md-3 col-xs-12 control-label">Respond Aduan</label>
+                                        <div class="col-md-9 col-xs-12">
+                                            <textarea class="form-control" rows="5" name="desc" id="desc"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-3 col-xs-12 control-label">Upload File</label>
+                                        <div class="col-md-4 col-xs-12">
+                                            <label class="switch">
+                                                <input class="switch" id="is_upload" value="0"  type="checkbox">
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-5 col-xs-12">
+                                            <span class="help-block">Upload File Respons</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id='upload-file' style="display:none;">
+                                        <label class="col-md-3 col-xs-12 control-label">Upload</label>
+                                        <div class="col-md-9 col-xs-12"><div class="dropzone dropzone-previews" id="my-awesome-dropzone"></div></div>
+                                    </div>
+
+                                </div>
+                                <div class="panel-footer">
+                                    <button class="btn btn-primary pull-right" id='save_respond'>Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="page-content-wrap">
     <div class="row">
         <div class="col-md-12">
 
             <!-- START DEFAULT DATATABLE -->
-            <div class="panel panel-default">
+            <div class="panel new-message panel-default">
                 <div class="panel-heading ui-draggable-handle">
                     <h2 class="panel-title"><span class="fa fa-envelope"></span> <?php echo $title; ?></h2>
                     <ul class="panel-controls">
-                         <!-- <li><a href="#" class="panel-collapse"><span class="fa fa-angle-down"></span></a></li> -->
-                        <li><button class="button panel-refresh"><span class="fa fa-refresh"></span></button></li>
-                        <!-- <li><a href="#" class="panel-remove"><span class="fa fa-times"></span></a></li> -->
+                        <li><button class="button panel-refresh" data-toggle="tooltip" data-placement="top" title="Refresh"><span class="fa fa-refresh"></span></button></li>
+
+                        <li><button class="button clear-filter" data-toggle="tooltip" data-placement="top" title="Clear Filter"><span class="fa fa-times"></span></button></li>
                     </ul>
                 </div>
                 <div class="panel-body">
@@ -82,7 +179,7 @@
                                     <th>Isi Pesan</th>
                                     <th class='dt-head-center'>Dibaca</th>
                                     <th class='dt-head-center'>Dibalas</th>
-                                    <th class='dt-head-center'>Tindak Lanjut</th>
+                                    <!-- <th class='dt-head-center'>Tindak Lanjut</th> -->
                                     <th class='dt-head-center'>Action</th>
                                 </tr>
                             </thead>
@@ -93,7 +190,7 @@
                                     <th class="input_text">Isi Pesan</th>
                                     <th class="input_select" id="read_status">Dibaca</th>
                                     <th class="input_select" id="reply_status">Dibalas</th>
-                                    <th class="input_select" id="respons_status">Tindak Lanjut</th>
+                                    <!-- <th class="input_select" id="respond_status">Tindak Lanjut</th> -->
                                     <th>&nbsp;</th>
                                 </tr>
                             </tfoot>
@@ -107,6 +204,34 @@
     </div>
 
 </div>
+
+
+<div class="message-box message-box-success animated fadeIn" id="message-box-success">
+    <div class="mb-container">
+        <div class="mb-middle">
+            <div class="mb-title"><span class="fa fa-check"></span> SUKSES</div>
+            <div class="mb-content success-sent">
+
+            </div>
+            <div class="mb-footer">
+                <button class="btn btn-default btn-lg pull-right mb-control-close">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="message-box message-box-danger animated fadeIn" id="message-box-danger">
+    <div class="mb-container">
+        <div class="mb-middle">
+            <div class="mb-title"><span class="fa fa-times"></span> GAGAL</div>
+            <div class="mb-content failed-sent">
+
+            </div>
+            <div class="mb-footer">
+                <button class="btn btn-default btn-lg pull-right mb-control-close">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript" src="<?php echo $themes_url; ?>js/plugins/bootstrap/bootstrap-datepicker.js"></script>
 
 <script>
@@ -117,20 +242,21 @@
             $(this).html(inp);
         });
 
-        $("#example #read_status").html('<select class="form-control" wodth="10" > <option value="def" disabled selected>STATUS</option> <option value="0">Belum</option><option value="1">Sudah</option></select>');
-        $("#example #reply_status").html('<select class="form-control" width="10" >   <option value="def" disabled selected>STATUS</option> <option value="0">Belum</option><option value="1">Sudah</option></select>');
-        $("#example #respons_status").html('<select class="form-control" wodth="10">  <option value="def" disabled selected>STATUS</option> <option value="0">Belum</option><option value="1">Sudah</option></select>');
+        $("#example #read_status").html('<select class="form-control" id="opt-readed" "width="10px" > <option value="" disabled selected>STATUS</option> <option value="0">Belum</option><option value="1">Sudah</option></select>');
+        $("#example #reply_status").html('<select class="form-control" id="opt-replied" width="10px" >   <option value="" disabled selected>STATUS</option> <option value="0">Belum</option><option value="1">Sudah</option></select>');
+        // $("#example #respond_status").html('<select class="form-control" id="opt-responded" width="10px">  <option value="" disabled selected>STATUS</option> <option value="0">Belum</option><option value="1">Sudah</option></select>');
 
         var table = $("#example").DataTable({
+            //    var table = $('#example').removeAttr('width').DataTable({
             responsive: true,
-            colReorder: true,
+            colReorder: false,
             columns: [
                 {"name": "in_datetime"},
                 {"name": "sender"},
                 {"name": "content"},
-                {"name": "read_status"},
-                {"name": "reply_status"},
-                {"name": "respons_status"},
+                {"name": "read_status", "className": "center"},
+                {"name": "reply_status", "className": "center"},
+                // {"name": "respond_status", "className": "center"},
                 {"name": "action", 'sortable': false},
             ],
             order: [[0, "desc"]],
@@ -153,13 +279,6 @@
                     previous: "Sebelumnya"
                 }
             },
-            columnDefs: [
-                {
-                    width: "8%", targets: 0,
-                    width: "8%", targets: 1,
-                    width: "40%", targets: 2,
-                }
-            ],
         });
 
         // Apply the search
@@ -168,34 +287,54 @@
 
             $('input', this.footer()).on('keyup change', function () {
                 if (that.search() !== this.value) {
-                    that
-                            .search(this.value)
-                            .draw();
+                    that.search(this.value).draw();
                 }
             });
 
             $('select', this.footer()).on('change', function () {
+
                 if (that.search() !== this.value) {
-                    that
-                            .search(this.value)
-                            .draw();
+                    that.search(this.value).draw();
                 }
             });
         });
+
+        setInterval(function () {
+            get_unshown_message();
+        }, 30000);
+        $.ajaxSetup({cache: false});
 
     });
 
     $(".panel-refresh").on("click", function () {
         var panel = $(this).parents(".panel");
-        panel_refresh(panel);
+        panel_refresh(panel, 'hidden');
 
         setTimeout(function () {
-            panel_refresh(panel);
+            panel_refresh(panel, 'hidden');
         }, 3000);
 
         $(this).parents(".dropdown").removeClass("open");
         return false;
     });
+
+    function get_unshown_message() {
+        var panel = $(".panel-refresh").parents(".panel");
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo base_url(); ?>service/get_unshown_message',
+            dataType: 'json',
+            success: function (count) {
+                if (count > 0) {
+                    panel_refresh(panel);
+                    setTimeout(function () {
+                        panel_refresh(panel);
+                    }, 5000);
+                }
+            }
+        });
+    }
+
 
 
     function panel_refresh(panel, action, callback) {
@@ -214,76 +353,217 @@
                 callback();
         }
         onload();
-//        $("input").val("");
         table.search('').draw();
     }
+
     $(function () {
         $(".datepicker").datepicker({
             format: 'yyyy-mm-dd',
             autoclose: true
         });
     });
+
+    $(".clear-filter").on('click', function () {
+        clear_filter();
+
+    });
+
+    function clear_filter() {
+        var panel = $(".panel-refresh").parents(".panel");
+
+        var table = $("#example").DataTable();
+        panel_refresh(panel);
+        setTimeout(function () {
+            panel_refresh(panel);
+            $('input[type="text"]').val('');
+            $('#opt-readed').val('');
+            $('#opt-replied').val('');
+            $('#opt-responded').val('');
+            table.search('').columns().search('').draw();
+        }, 5000);
+    }
+
 </script>
 <script>
     $(document).ready(function () {
         var panel = $(this).parents(".panel");
-        $('#replysms').on('shown.bs.modal', function (event) { // id of the modal with event
-
+        $('.modal').on('shown.bs.modal', function (event) { // id of the modal with event
+//            $('.modal-content').css('height', $(window).height() * 0.8);
+            $('.modal-body').css('height', $(window).height() * 0.6);
             button = $(event.relatedTarget); // Button that triggered the modal
             content = button.data('content');
             sender = button.data('senderphone');
             readed = button.data('readed');
+            date = button.data('indatetime');
             messageID = button.data('id');
-            notes = 'Balasan Aduan dari ' + sender + ', tentang : ' + content;
-            $('#receiver').val(sender);
-            $('#in_id').val(messageID);
-            $('#notes').val(notes);
-            $('#out_type').val('reply');
+            responded = button.data('responded');
+            replied = button.data('replied');
 
-            status = 'readed';
-            updateInbox(messageID, status);
+            notes = 'Aduan dari ' + sender + ', tentang : ' + content;
+
+            $('.receiver').val(sender);
+            $('.in_id').val(messageID);
+            $('.notes').val(notes);
+            $('.indate').val(date);
+            $('.replied').val(replied);
+            $('.responded').val(responded);
+
+            upstatus = 'readed';
+            updateInbox(messageID, upstatus, readed, date);
             $('.modal-title').html('<div class="alert alert-info" >PESAN DARI ' + sender + ' </div>');
             $('.message_content').html('<div class="alert alert-success"> ISI PESAN : <br><blockquote>' + content + '</blockquote> </div>');
         });
 
 
-        $(".modal").on('hidden.bs.modal', function(){
+        $(".modal").on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+            $('#content').val('');
             panel_refresh(panel);
-        } );
+            // setTimeout(function () {
+            //     panel_refresh(panel);
+            // }, 5000);
+
+            // $(this).parents(".dropdown").removeClass("open");
+            // return false;
+        });
 
 
         $("#send-reply").click(function (e) {
             e.preventDefault();
             var form_data = $("#form-reply").serialize();
-//            console.log(form_data);
-//            alert(form_data);
             $.ajax({
                 type: 'POST',
-                url: '<?php echo base_url('service/insert_outbox'); ?>',
+                url: '<?php echo base_url('service/act_reply'); ?>',
                 data: form_data,
                 dataType: 'json',
                 async: false,
-                success: function (response) {
-//                    alert(response['status']);
-                    if(response['status'] == 'success') {
-                        updateInbox($('#in_id').val(),'replied');
-                        alert('Pesan Telah dikirim ke ' + $('#receiver').val());
-                    }else{
-                        alert('Pesan Gagal dikirim ke ' + $('#receiver').val());
+                success: function (status) {
+                    if (status == 'success') {
+                        updateInbox($('.in_id').val(), 'replied', $('.replied').val(), $('.indate').val());
+                        var information = 'Pesan Telah dikirim ke ' + $('.receiver').val();
+                        $('.success-sent').html(information);
+                        $('#replysms').hide();
+                        $('#message-box-success').toggleClass("open");
+                    } else {
+                        var information = 'Pesan Gagal dikirim ke ' + $('.receiver').val();
+                        $('.failed-sent').html(information);
+                        $('#message-box-danger').toggleClass("open");
                     }
                 }
             });
         });
 
-        function updateInbox(id, status) {
-            $.ajax({
-                type: 'POST',
-                url: '<?php echo base_url('service/updateInboxStatus'); ?>',
-                data: 'message_id= ' + id + '&status=' + status,
-                dataType: 'json',
-                async: false,
-            });
-        }
+
+        $(".mb-control-close").on("click", function () {
+            $(".message-box").removeClass("open");
+            panel_refresh(panel);
+            return false;
+        });
+
+
 
     });
+
+
+    $('#is_sms').on('change', function () {
+        if ($(this).is(':checked')) {
+            $("#is_sms").val(1);
+            $(".ta-content").html('<label class="col-md-3 col-xs-12 control-label">ISI PESAN</label><div class="col-md-9 col-xs-12"><textarea class="form-control input-content" rows="5" name="content" id="content"></textarea></div>');
+//            $('#respond-aduan').html('');
+        } else {
+            $("#is_sms").val(0);
+            $(".ta-content").html("");
+//            $("#respond-aduan").html('<label class="col-md-3 col-xs-12 control-label">Respond Aduan</label><div class="col-md-9 col-xs-12"><textarea class="form-control" rows="5" name="desc" id="desc"></textarea></div>');
+        }
+    });
+    $('#is_upload').on('change', function () {
+        if ($(this).is(':checked')) {
+            $("#is_upload").val(1);
+            $("#upload-file").show();
+        } else {
+            $("#is_upload").val(0);
+            $("#upload-file").hide();
+        }
+    });
+
+</script>
+<script>
+    Dropzone.autoDiscover = false;
+//    Dropzone.options.myAwesomeDropzone= {
+    $("#my-awesome-dropzone").dropzone({
+        removeAllFiles: true,
+        url: '<?php echo base_url('service/act_respond'); ?>',
+        autoProcessQueue: false,
+        uploadMultiple: true,
+        parallelUploads: 5,
+        maxFiles: 5,
+        maxFilesize: 1,
+        acceptedFiles: 'image/*',
+        addRemoveLinks: true,
+        init: function () {
+            dzClosure = this; // Makes sure that 'this' is understood inside the functions below.
+
+            $("#save_respond").on("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (dzClosure.getQueuedFiles().length > 0) {
+                    dzClosure.processQueue();
+                } else {
+                    submitMyFormWithData('<?php echo base_url('service/act_respond'); ?>');
+                }
+            });
+
+            //send all the form data along with the files:
+            this.on("sendingmultiple", function (data, xhr, formData) {
+                var form_Data = $("#form-respond").serializeArray();
+                $.each(form_Data, function (i, field) {
+                    formData.append(field.name, field.value);
+                });
+            });
+
+            $("#respond-sms").on('hidden.bs.modal', function () {
+                dzClosure.removeAllFiles(true);
+            });
+        }
+    });
+
+    function submitMyFormWithData(url)
+    {
+        is_sms = $("#is_sms").val();
+        var formData = $("#form-respond").serialize();
+
+        $.ajax({
+            url: url,
+            data: formData + '&is_sms=' + is_sms,
+            dataType: 'json',
+            async: false,
+            type: 'POST',
+            success: function (status) {
+               alert(status);
+                if (status == 'success') {
+                    updateInbox($('.in_id').val(), 'responded', $('.responded').val(), $('.indate').val());
+                    var information = 'Pesan Telah dikirim ke ' + $('.receiver').val();
+                    $('.success-sent').html(information);
+                    $('.respond-sms').hide();
+                    $('#message-box-success').toggleClass("open");
+                } else {
+                    var information = 'Pesan Gagal dikirim ke ' + $('.receiver').val();
+                    $('.failed-sent').html(information);
+                    $('#message-box-danger').toggleClass("open");
+                }
+            }
+        });
+    }
+</script>
+<script>
+function updateInbox(id, status, prev_status, date) {
+    $.ajax({
+        type: 'POST',
+        url: '<?php echo base_url('service/updateInboxStatus'); ?>',
+        data: 'message_id= ' + id + '&status=' + status + '&prev_status=' + prev_status + '&indate=' + date,
+        dataType: 'json',
+        async: false,
+    });
+}
 </script>

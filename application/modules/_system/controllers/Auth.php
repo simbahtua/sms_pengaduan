@@ -3,12 +3,11 @@
 /**
  *
  */
- defined('BASEPATH') OR exit('No direct script access allowed');
-class Auth extends MY_Controller
-{
+defined('BASEPATH') OR exit('No direct script access allowed');
 
-    function __construct()
-    {
+class Auth extends MY_Controller {
+
+    function __construct() {
         parent::__construct();
         // $this->load->model('_system/systems_model');
         $this->load->library('ion_auth');
@@ -23,7 +22,6 @@ class Auth extends MY_Controller
         $this->login();
     }
 
-
     function login() {
 
         //ini buat clear cache agar kalo setelah login tidak bisa di back lewat button back di browser
@@ -32,19 +30,17 @@ class Auth extends MY_Controller
         $this->output->set_header('Pragma: no-cache');
         $this->output->set_header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 
-        if ($this->ion_auth->logged_in())
-        {
+        if ($this->ion_auth->logged_in()) {
             redirect('admin/dashboard', 'refresh');
-        }else {
+        } else {
             $this->load->helper('form');
             if (isset($_GET['redirect_url']) && trim($_GET['redirect_url']) != '') {
                 $data['redirect_url'] = $_GET['redirect_url'];
             } else {
                 $data['redirect_url'] = '';
             }
-            themes('admin','login', $data);
+            themes('admin', 'login', $data);
         }
-
     }
 
     function authenticate() {
@@ -58,42 +54,37 @@ class Auth extends MY_Controller
         if ($this->form_validation->run() == true) {
 
             //check for "remember me";
-           $remember = (bool) $this->input->post('remember');
+            $remember = (bool) $this->input->post('remember');
+            $redirect_url = $this->input->post('redirect_url');
 
-           if ($this->ion_auth->login($this->input->post('username'), $this->input->post('password'), $remember))
-           {
-               redirect('admin/dashboard');
-
-           }
-           else
-           {
-               // if the login was un-successful
-               // redirect them back to the login page
-              $this->session->set_flashdata('message', $this->ion_auth->errors());
-              redirect('login');
-
-           }
-
-
+            if ($this->ion_auth->login($this->input->post('username'), $this->input->post('password'), $remember)) {
+                if (trim($redirect_url) != '') {
+                    redirect($redirect_url);
+                } else {
+                    redirect('admin/dashboard');
+                }
+            } else {
+                // if the login was un-successful
+                // redirect them back to the login page
+                $this->session->set_flashdata('message', $this->ion_auth->errors());
+                redirect('login');
+            }
         } else {
-         $this->session->set_flashdata('username', $this->input->post('username'));
+            $this->session->set_flashdata('username', $this->input->post('username'));
             $this->session->set_flashdata('message', validation_errors());
-          
+
             redirect('login');
-
         }
-
     }
 
     function logout() {
-      $this->data['title'] = "Logout";
-		// log the user out
-  		$logout = $this->ion_auth->logout();
+        $this->data['title'] = "Logout";
+        // log the user out
+        $logout = $this->ion_auth->logout();
 
-		// redirect them to the login page
-      $this->session->set_flashdata('message', $this->ion_auth->messages());
-		  redirect('login');
+        // redirect them to the login page
+        $this->session->set_flashdata('message', $this->ion_auth->messages());
+        redirect('login');
     }
-
 
 }

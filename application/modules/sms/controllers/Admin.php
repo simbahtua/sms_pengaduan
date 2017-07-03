@@ -10,7 +10,7 @@ class Admin extends Admin_Controller {
 
     function __construct() {
         parent::__construct();
-        // $this->load->model('sms/admin_sms_model');
+        // $this->locad->model('sms/admin_sms_model');
     }
 
     function index() {
@@ -26,6 +26,9 @@ class Admin extends Admin_Controller {
         $data['extra_header'] .= '<link rel="stylesheet" type="text/css" href="' . base_url("plugins/datatable/extensions/ColReorder/css/colReorder.bootstrap.min.css") . '"/>';
 
         $data['extra_header'] .= '<link rel="stylesheet" type="text/css" href="' . base_url("plugins/datatable/css/dataTables.bootstrap.css") . '" />';
+        $data['extra_header'] .= '<link rel="stylesheet" type="text/css" href="' . base_url("plugins/dropzone/dropzone.css") . '" />';
+        $data['extra_header'] .= '<script type="text/javascript" src="' . base_url("plugins/dropzone/dropzone.min.js") . '"></script>';
+
 
         $data['extra_footer'] = '<script type="text/javascript" src="' . base_url("plugins/datatable/js/jquery.dataTables.min.js") . '"></script>';
         $data['extra_footer'] .= '<script type="text/javascript" src="' . base_url("plugins/datatable/js/dataTables.bootstrap.min.js") . '"></script>';
@@ -33,6 +36,7 @@ class Admin extends Admin_Controller {
 
         $data['extra_footer'] .= '<script type="text/javascript" src="' . base_url("plugins/datatable/extensions/Responsive/js/responsive.bootstrap.min.js") . '"></script>';
         $data['extra_footer'] .= '<script type="text/javascript" src="' . base_url("plugins/datatable/extensions/ColReorder/js/dataTables.colReorder.min.js") . '"></script>';
+//        $data['extra_footer'] .= '<script type="text/javascript" src="' . base_url("plugins/dropzone/dropzone.min.js") . '"></script>';
 
 
         $data['service_url'] = base_url('service/get_inbox_data');
@@ -61,6 +65,6 @@ class Admin extends Admin_Controller {
         themes('admin', 'sms/admin_outbox_view', $data);
     }
 
-    
+
 
 }

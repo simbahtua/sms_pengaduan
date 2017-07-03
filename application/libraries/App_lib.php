@@ -45,7 +45,8 @@ class App_lib
             $sort
             $limit
         ";
-
+        
+        
         $query = $this->CI->db->query($sql);
         $total = $this->CI->db->query('SELECT FOUND_ROWS() as total')->row()->total;
         $output['data'] = $query;
@@ -136,16 +137,17 @@ class App_lib
 
     */
     function zenziva_service($params = array()) {
-        $zenziva_config = $this->get_zenziva_config()->row();
 
-        $params['userkey'] = $zenziva_config->userkey;
-        $params['passkey'] = $zenziva_config->keyword;
-
-        if(!empty($params)) {
+        if(!empty($params) || count($params) > 0) {
             $add_command = $params['command'] . '.php';
         }else {
             $add_command = 'credit.php';
         }
+
+        $zenziva_config = $this->get_zenziva_config()->row();
+
+        $params['userkey'] = $zenziva_config->userkey;
+        $params['passkey'] = $zenziva_config->keyword;
 
         $url = "http://pengaduan.zenziva.co.id/api/".$add_command;
 
@@ -157,7 +159,7 @@ class App_lib
         curl_setopt($curlHandle, CURLOPT_TIMEOUT, 30);
         curl_setopt($curlHandle, CURLOPT_POST, 1);
         $response = curl_exec($curlHandle);
-        
+
 $xml_string = <<<XML
 $response
 XML;
@@ -167,6 +169,47 @@ XML;
 
         return $sXML;
 
+    }
+
+    function get_one($table_name = '', $fieldname = null, $where = null, $fieldsort = null, $sort = 'asc') {
+        $this->CI->db->select($fieldname);
+        if ($where != null) {
+            $this->CI->db->where($where);
+        }
+        if ($fieldsort == null) {
+            $fieldsort = $fieldname;
+        }
+        $this->CI->db->order_by($fieldsort, $sort);
+        $this->CI->db->offset(0);
+        $this->CI->db->limit(1);
+        $query = $this->CI->db->get($table_name);
+        if ($query->num_rows() > 0) {
+            $row = $query->row();
+            $result = $row->$fieldname;
+        } else {
+            $result = '';
+        }
+        return $result;
+    }
+
+    function insert_data($table_name, $data) {
+        $this->CI->db->insert($table_name, $data);
+        return $this->CI->db->insert_id();
+    }
+
+    function insert_ignore_data($table_name, $data) {
+        $this->CI->db->insert_ignore($table_name, $data);
+        return $this->CI->db->insert_id();
+    }
+
+    function update_data($table_name, $fieldname, $value_id, $data) {
+        $this->CI->db->where($fieldname, $value_id);
+        $this->CI->db->update($table_name, $data);
+    }
+
+    function delete_data($table_name, $fieldname, $value_id) {
+        $this->CI->db->where($fieldname, $value_id);
+        $this->CI->db->delete($table_name);
     }
 }
 

@@ -33,6 +33,7 @@
                     <?php endif; ?>
 
                     <form action="<?php echo base_url();?>validate" class="form-horizontal" method="post">
+                        <input type='hidden' name="redirect_url" value="<?php echo $redirect_url;?>">
                     <div class="form-group">
                         <div class="col-md-12">
                             <input type="text" name="username" class="form-control" placeholder="Nama User"/>

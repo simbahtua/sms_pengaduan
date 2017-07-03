@@ -20,18 +20,32 @@ class _cron extends MY_Controller {
      */
 
     function getInbox($status = 'all', $start_date = '', $end_date = '') {
+
+        $output = array();
         if ($start_date == '') {
             $start_date = $end_date = $this->date;
         }
         $params['command'] = 'inboxgetbydate';
         $params['from'] = $start_date;
         $params['to'] = $end_date;
-        $params['status'] = 'all';
+        $params['status'] = $status;
         $inbox = $this->app_lib->zenziva_service($params);
-        // echo '<pre>';
-        // print_r($inbox);
 
-        $this->save_inbox($inbox);
+        if (!empty($inbox)) {
+            if($inbox->message->text != 'Null') {
+                $save = $this->save_inbox($inbox, true);
+                if($save == '') {
+                    $output['status'] = false;
+                }else {
+                    $output['status'] = true;
+                }
+            }
+        }
+        else {
+            $output['status'] = false;
+        }
+
+        echo json_encode($output);
     }
 
     /*
@@ -39,44 +53,104 @@ class _cron extends MY_Controller {
      */
 
     function read_inbox() {
+        $output = array();
         $params['command'] = 'readsms';
         $inbox = $this->app_lib->zenziva_service($params);
-        if ($inbox->message->text == 'Message empty') {
-            echo 'ga ada sms baru';
+
+        if(!empty($inbox)) {
+            if ($inbox->message->text == 'Message empty') {
+            $output['status'] = false;
         } else {
-            $this->save_inbox($inbox);
+                // $this->save_inbox($inbox);
+                $save = $this->save_inbox($inbox);
+                if ($save == '') {
+                    $output['status'] = false;
+                } else {
+                    $output['status'] = true;
+                }
+            }
+        }else{
+            $output['status'] = false;
         }
+
+        echo json_encode($output);
     }
 
     // fungsi simpan sms yang baru
-    function save_inbox($data = array()) {
-
-//         mysqli_report(MYSQLI_REPORT_ALL); // Traps all mysqli error 
-
+    function save_inbox($data = array(), $merge_date = false) {
+        $status = '';
         if (!empty($data)) {
+            $prev_date = '';
+            $prev_date_query = '';
+            $in_count = $spam_count  = 0;
+            $in = $spam = 0;
 
+            $arr_daily_data = array();
             foreach ($data->message as $row) {
-                $insert_data = array();
-                $message_content = $row->isiPesan;
+                $is_spam = true;
 
-                $is_valid_format = 0;
-                if (preg_match("/#aduan#/", $row->isiPesan)) {
-                    $is_valid = true;
-                    $insert_data['in_type'] = 1;
-                    $table = 'message_in';
-                    $message_content = preg_replace('/#aduan#/', '', $message_content);
-                } else {
-                    $table = 'message_spam';
+                $message_content = $row->isiPesan;
+                if (preg_match("/#aduan#/", $message_content)) {
+                    $is_spam = false;
                 }
+
+                $table = ($is_spam) ? 'message_spam': 'message_in';
 
                 $insert_data['inbox_id'] = $row->id;
                 $insert_data['sender'] = $row->dari;
-                $insert_data['in_datetime'] = $row->tgl . ' ' . $row->waktu;
-                $insert_data['content'] = $message_content;
+                if( $merge_date ) {
+                    $message_date = $row->tgl;
+                    $insert_data['in_datetime'] = $row->tgl . ' ' . $row->waktu;
+                }else {
+                    $in_datetime = explode(' ', $row->waktu);
+                    $message_date = $in_datetime[0];
+                    $insert_data['in_datetime'] = $row->waktu;
+                }
+                $insert_data['content'] = preg_replace('/#aduan#/', '', $message_content);
 
-                $this->db->insert_ignore($table, $insert_data);
+                $insert_id = $this->app_lib->insert_ignore_data($table, $insert_data);
+                if($insert_id != 0) {
+                    if(strtotime($prev_date) != strtotime($message_date)) {
+                        $prev_date = $message_date;
+                        if($is_spam) {
+                            $in_count = 0; $spam_count = 1;
+                        }else {
+                            $in_count = 1; $spam_count = 0;
+                        }
+
+                    }else{
+                        if($is_spam) {
+                            $spam_count++;
+                        }else {
+                            $in_count++;
+                        }
+                    }
+
+                    $arr_daily_data[strtotime($message_date)]['in'] = $in_count;
+                    $arr_daily_data[strtotime($message_date)]['spam'] = $spam_count;
+                }
+
+            }
+
+            if(!empty($arr_daily_data)) {
+                $status = 'update';
+                foreach ($arr_daily_data as $key => $value) {
+                    $date = date('Y-m-d', $key);
+                    $arr_date = explode('-', $date);
+                    $is_exist = $this->app_lib->get_one('inbox_report', 'id', 'message_date = '.$key);
+
+                    if($is_exist) {
+                        $sql = 'UPDATE inbox_report SET in_count = in_count +' .$value['in'] . ', spam_count = spam_count +'.$value['spam'] .'
+                         WHERE message_date =  '.$key;
+                    }else {
+                        $sql = 'INSERT INTO inbox_report SET in_count = ' .$value['in'] . ', spam_count = '.$value['spam'] .'
+                         , message_date =  '.$key. ',message_day = '.$arr_date[2]. ',message_month = '.$arr_date[1]. ',message_year = '.$arr_date[0];
+                    }
+                    $this->db->query($sql);
+                }
             }
         }
+        return $status;
     }
 
     //fungsi auto reply format salah
@@ -116,8 +190,7 @@ class _cron extends MY_Controller {
                 if(!empty($resp->message->status)) {
                     $data['status'] = $resp->message->status;
                     $this->db->where('z_outbox_id', $param['id']);
-                    $this->db->update($q_params['table'], $data); 
-                    
+                    $this->db->update($q_params['table'], $data);
                 }
             }
         }
@@ -125,9 +198,7 @@ class _cron extends MY_Controller {
 
     function getallaoutbox() {
         $params['command'] = 'outboxgetall';
-        // $params['id'] = '6765df08291243ec8de4ded5aaecee0e';
         $resp = $this->app_lib->zenziva_service($params);
-        
         echo '<pre>';
         print_r($resp);
     }
