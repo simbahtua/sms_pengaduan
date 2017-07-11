@@ -45,8 +45,8 @@ class App_lib
             $sort
             $limit
         ";
-        
-        
+
+
         $query = $this->CI->db->query($sql);
         $total = $this->CI->db->query('SELECT FOUND_ROWS() as total')->row()->total;
         $output['data'] = $query;
@@ -210,6 +210,11 @@ XML;
     function delete_data($table_name, $fieldname, $value_id) {
         $this->CI->db->where($fieldname, $value_id);
         $this->CI->db->delete($table_name);
+    }
+
+    function get_detail_data($table_name, $fieldname, $value_id) {
+        $this->CI->db->where($fieldname, $value_id);
+        return $this->CI->db->get($table_name);
     }
 }
 
