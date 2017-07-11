@@ -62,3 +62,4 @@ $route['validate'] = '_system/auth/authenticate';
 $route['admin/([a-zA-Z_-]+)/(:any)'] = "$1/admin/$2";
 $route['admin/([a-zA-Z_-]+)'] = "$1/admin";
 $route['service/(:any)'] = "_service/service/$1";
+$route['print/(:any)'] = '_service/service/print_inbox/$1';
