@@ -471,7 +471,9 @@ class Service extends Admin_Controller {
                 $sql_update .= ', respons_count = respons_count -1';
             }
 
-            $sql_update .= ' WHERE message_date = "'.$date.'"';
+
+
+            $sql_update .= ' WHERE message_date = "'.strtotime($date).'"';
             $updated = $this->db->query($sql_update);
 
             if($updated) {
