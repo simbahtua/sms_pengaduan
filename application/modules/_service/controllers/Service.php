@@ -41,15 +41,11 @@ class Service extends Admin_Controller {
     }
 
     function get_inbox_data() {
-
         /** AJAX Handle */
         $requestData = $_REQUEST;
         $params = isset($_POST) ? $_POST : array();
 
-
         $params['table'] = 'message_in';
-        $params['id-table'] = 'id';
-
         /**
          * Kolom yang ditampilkan
          */
@@ -79,17 +75,14 @@ class Service extends Admin_Controller {
         }
         /**
          * Search Individual Kolom
-         * pencarian dibawah kolom
          */
 
         for ($i = 0; $i < $total_column; $i++) {
-
             $searchCol = $requestData['columns'][$i]['search']['value'];
             if ($searchCol != '') {
                 $where_detail .= $columns[$i] . ' LIKE "%' . $searchCol . '%" AND ';
             }
         }
-
 
         if ($where_detail != '') {
             $params['where_detail'] = rtrim($where_detail, ' AND ');
@@ -129,24 +122,26 @@ class Service extends Admin_Controller {
             $reply_status = '<img src="' . base_url() . '/assets/icons/' . $is_reply_image . '"/>';
             $respons_status = '<img src="' . base_url() . '/assets/icons/' . $is_respons_image . '"/>';
 
-            // $action = ' <div class="btn-group">
-            //                 <button type="button" class="btn btn-success btn-sm" data-toggle="dropdown""><span class="caret"></span>&nbsp;PILIH AKSI &nbsp;</button>
-            //                 <ul class="dropdown-menu" style="margin-left: -70px;">
-            //                     <li><a type="button" data-toggle="modal" data-target="#replysms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">BACA SMS</a></li>
-            //                     <li><a type="button" data-toggle="modal" data-target="#replysms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">BALAS SMS</a></li>
-            //                     <li><a type="button" data-toggle="modal" data-target="#respond-sms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">TINDAK LANJUT</a></li>
-            //
-            //                 </ul>
-            //             </div>
-            //         ';
-            $action = ' <div class="btn-group">
-                            <button type="button" class="btn btn-success btn-sm" data-toggle="dropdown""><span class="caret"></span>&nbsp;PILIH AKSI &nbsp;</button>
-                            <ul class="dropdown-menu" style="margin-left: -70px;">
-                                <li><a type="button" data-toggle="modal" data-target="#replysms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">BACA SMS</a></li>
-                                <li><a type="button" data-toggle="modal" data-target="#replysms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">BALAS SMS</a></li>
-                            </ul>
-                        </div>
-                    ';
+             $action = ' <div class="btn-group">
+                             <button type="button" class="btn btn-success btn-sm" data-toggle="dropdown""><span class="caret"></span>&nbsp;PILIH AKSI &nbsp;</button>
+                             <ul class="dropdown-menu" style="margin-left: -70px;">
+                                 <li><a type="button" data-toggle="modal" data-target="#replysms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">BACA SMS</a></li>
+                                 <li><a type="button" data-toggle="modal" data-target="#replysms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">BALAS SMS</a></li>
+                                 <li><a type="button" data-toggle="modal" data-target="#respond-sms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">TINDAK LANJUT</a></li>
+                                 <li><a type="button" onclick="delete_message('.$row->id.')">HAPUS INBOX</a></li>
+                                 <li><a href="'.base_url('print/'. strtotime($row->in_datetime)).'" target="_blank">PRINT</a></li>
+
+                             </ul>
+                         </div>
+                     ';
+//            $action = ' <div class="btn-group">
+//                            <button type="button" class="btn btn-success btn-sm" data-toggle="dropdown""><span class="caret"></span>&nbsp;PILIH AKSI &nbsp;</button>
+//                            <ul class="dropdown-menu" style="margin-left: -70px;">
+//                                <li><a type="button" data-toggle="modal" data-target="#replysms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">BACA SMS</a></li>
+//                                <li><a type="button" data-toggle="modal" data-target="#replysms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">BALAS SMS</a></li>
+//                            </ul>
+//                        </div>
+//                    ';
 
             $entry = array(
                 convert_date($row->in_datetime, 'id', 'num', '-'),
@@ -154,7 +149,7 @@ class Service extends Admin_Controller {
                 $row->content,
                 $read_status,
                 $reply_status,
-                // $respons_status,
+                 $respons_status,
                 $action
             );
             $json_data['data'][] = $entry;
@@ -366,7 +361,7 @@ class Service extends Admin_Controller {
         if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
 
             $save_respond = true;
-            $is_sms = $this->input->post('is_sms');
+            $is_sms = ($this->input->post('is_sms')) ? $this->input->post('is_sms') : 0;
             $data['in_id'] = $this->input->post('in_id');
             $data['is_sms'] = $is_sms;
             $data['detail_aduan'] = $this->input->post('notes');
@@ -388,6 +383,7 @@ class Service extends Admin_Controller {
 
             if ($save_respond) {
                 if (!empty($_FILES)) {
+
                     $config['upload_path'] = $dir_target;
                     $config['allowed_types'] = 'gif|jpg|png|ico';
                     $this->load->library('upload');
@@ -414,7 +410,6 @@ class Service extends Admin_Controller {
                         }
                     }
                 }
-
                 $insert_id = $this->db->insert('responds', $data);
 
                 if ($insert_id) {
@@ -444,6 +439,80 @@ class Service extends Admin_Controller {
                 }
             }
         }
+    }
+
+    function act_delete() {
+        $inbox_id = $this->input->post('id');
+        // echo $inbox_id;
+        $response = array();
+
+        $detail = $this->app_lib->get_detail_data('message_in', 'id', $inbox_id);
+        // print_r($detail);
+        if($detail->num_rows() > 0) {
+
+            $row = $detail->row();
+            $date_time = explode(' ', $row->in_datetime);
+            $date = $date_time[0];
+            $read_status = $row->readed;
+            $reply_status = $row->replied;
+            $responds_status = $row->responded;
+
+            // $this->app_lib->delete_data('message_in','id', $inbox_id);
+
+            // Update summary inbox_id
+            $sql_update = 'UPDATE inbox_report SET in_count = in_count - 1';
+            if($read_status == 1) {
+                $sql_update .= ', read_count = read_count -1';
+            }
+            if($reply_status == 1) {
+                $sql_update .= ', reply_count = reply_count -1';
+            }
+            if($responds_status == 1) {
+                $sql_update .= ', respons_count = respons_count -1';
+            }
+
+            $sql_update .= ' WHERE message_date = "'.$date.'"';
+            $updated = $this->db->query($sql_update);
+
+            if($updated) {
+                $this->app_lib->delete_data('message_in','id', $inbox_id);
+                $response['status'] = true;
+                $response['message'] = 'Pesan Aduan Berhasil Dihapus';
+            }else {
+                $response['status'] = false;
+                $response['message'] = 'Pesan Aduan gagal dihapus';
+            }
+
+        }else {
+            $response['status'] = false;
+            $response['message'] = 'Data Tidak Ditemukan';
+        }
+
+        echo json_encode($response);
+    }
+
+    function print_inbox() {
+        $data = array();
+        $data['arr_breadcrumbs'] = array(
+            'SMS' => '#',
+            'Inbox' => 'admin/sms/inbox',
+            'Cetak Inbox' => '',
+        );
+
+        $indatetime = $this->uri->segment(2);
+
+        if($indatetime != ''){
+            if( is_numeric($indatetime) && (int)$indatetime == $indatetime ) {
+                $indatetime = date('Y-m-d H:i:s' , $indatetime);
+            }
+        }
+
+        $detail = $this->app_lib->get_detail_data("message_in", "in_datetime", $indatetime);
+        if($detail->num_rows() > 0) {
+            $data['detail'] = $detail->row();
+        }
+        themes('blank', 'sms/admin_print_inbox', $data);
+
     }
 
 }

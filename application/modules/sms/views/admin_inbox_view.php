@@ -125,7 +125,7 @@
                                         <label class="col-md-3 col-xs-12 control-label">Upload File</label>
                                         <div class="col-md-4 col-xs-12">
                                             <label class="switch">
-                                                <input class="switch" id="is_upload" value="0"  type="checkbox">
+                                                <input class="switch" name="is_upload" id="is_upload" value="0"  type="checkbox">
                                                 <span></span>
                                             </label>
                                         </div>
@@ -177,9 +177,9 @@
                                     <th>Tanggal</th>
                                     <th>Pengirim</th>
                                     <th>Isi Pesan</th>
-                                    <th class='dt-head-center'>Dibaca</th>
-                                    <th class='dt-head-center'>Dibalas</th>
-                                    <!-- <th class='dt-head-center'>Tindak Lanjut</th> -->
+                                    <th class='dt-head-center'>Status Dibaca</th>
+                                    <th class='dt-head-center'>Status Dibalas</th>
+                                    <th class='dt-head-center'>Status Tindak Lanjut</th>
                                     <th class='dt-head-center'>Action</th>
                                 </tr>
                             </thead>
@@ -188,9 +188,9 @@
                                     <th><input  readonly="readonly" type="text" id="5" class="form-control datepicker" size="12" placeholder="Cari Tanggal"></th>
                                     <th class="input_text">Pengirim</th>
                                     <th class="input_text">Isi Pesan</th>
-                                    <th class="input_select" id="read_status">Dibaca</th>
-                                    <th class="input_select" id="reply_status">Dibalas</th>
-                                    <!-- <th class="input_select" id="respond_status">Tindak Lanjut</th> -->
+                                    <th class="input_select" id="read_status">Status Dibaca</th>
+                                    <th class="input_select" id="reply_status">Statyus Dibalas</th>
+                                    <th class="input_select" id="respond_status">Status Tindak Lanjut</th>
                                     <th>&nbsp;</th>
                                 </tr>
                             </tfoot>
@@ -244,10 +244,9 @@
 
         $("#example #read_status").html('<select class="form-control" id="opt-readed" "width="10px" > <option value="" disabled selected>STATUS</option> <option value="0">Belum</option><option value="1">Sudah</option></select>');
         $("#example #reply_status").html('<select class="form-control" id="opt-replied" width="10px" >   <option value="" disabled selected>STATUS</option> <option value="0">Belum</option><option value="1">Sudah</option></select>');
-        // $("#example #respond_status").html('<select class="form-control" id="opt-responded" width="10px">  <option value="" disabled selected>STATUS</option> <option value="0">Belum</option><option value="1">Sudah</option></select>');
+        $("#example #respond_status").html('<select class="form-control" id="opt-responded" width="10px">  <option value="" disabled selected>STATUS</option> <option value="0">Belum</option><option value="1">Sudah</option></select>');
 
         var table = $("#example").DataTable({
-            //    var table = $('#example').removeAttr('width').DataTable({
             responsive: true,
             colReorder: false,
             columns: [
@@ -256,12 +255,13 @@
                 {"name": "content"},
                 {"name": "read_status", "className": "center"},
                 {"name": "reply_status", "className": "center"},
-                // {"name": "respond_status", "className": "center"},
+                {"name": "respond_status", "className": "center"},
                 {"name": "action", 'sortable': false},
             ],
             order: [[0, "desc"]],
             processing: true,
             serverSide: true,
+            stateSave: false,
             ajax: {
                 url: '<?php echo $service_url; ?>',
                 type: 'POST'
@@ -335,10 +335,9 @@
         });
     }
 
-
-
     function panel_refresh(panel, action, callback) {
         var table = $("#example").DataTable();
+
         if (!panel.hasClass("panel-refreshing")) {
             panel.append('<div class="panel-refresh-layer"><img src="<?php echo $themes_url; ?>img/loaders/default.gif"/></div>');
             panel.find(".panel-refresh-layer").width(panel.width()).height(panel.height());
@@ -353,7 +352,11 @@
                 callback();
         }
         onload();
-        table.search('').draw();
+        table.draw();
+//        table.state.save();
+//        table.stateSave(true)/draw();
+//         table.state.save();
+//        table.serverside();
     }
 
     $(function () {
@@ -365,8 +368,44 @@
 
     $(".clear-filter").on('click', function () {
         clear_filter();
-
     });
+
+    function delete_message(inbox_id) {
+        // alert('Hapus Pesan ' + inbox_id);
+
+        confirmation = confirm('Anda Yakin Akan Menghapus Pesan Ini?');
+
+        if(confirmation) {
+            information = 'Penghapusan Pesan Dibatalkan';
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo base_url('service/act_delete'); ?>',
+                data: 'id='+inbox_id,
+                dataType: 'json',
+                async: false,
+                success: function (response) {
+
+                    information = response['message'];
+                    if (response['status'] == true) {
+                        box = 'message-box-success';
+                    }else {
+                        box = 'message-box-danger';
+                    }
+
+                    $('.success-sent').html(information);
+                    $('#' + box).toggleClass("open");
+                }
+
+            });
+
+        }else {
+            information = 'Penghapusan Pesan Dibatalkan';
+            $('.success-sent').html(information);
+            $('#message-box-success').toggleClass("open");
+        }
+
+    }
+
 
     function clear_filter() {
         var panel = $(".panel-refresh").parents(".panel");
@@ -414,17 +453,19 @@
             $('.message_content').html('<div class="alert alert-success"> ISI PESAN : <br><blockquote>' + content + '</blockquote> </div>');
         });
 
+        $("#respond-sms").on('shown.bs.modal', function() {
+            $("#is_sms").val(0);
+            $(".ta-content").html('');
+            $("#desc").val('');
+            $("#is_upload").val(0);
+            $("#upload-file").hide();
+            $('.switch').attr('checked',false);
+        });
 
         $(".modal").on('hidden.bs.modal', function () {
             $(this).removeData('bs.modal');
             $('#content').val('');
             panel_refresh(panel);
-            // setTimeout(function () {
-            //     panel_refresh(panel);
-            // }, 5000);
-
-            // $(this).parents(".dropdown").removeClass("open");
-            // return false;
         });
 
 
@@ -459,9 +500,6 @@
             panel_refresh(panel);
             return false;
         });
-
-
-
     });
 
 
@@ -469,11 +507,11 @@
         if ($(this).is(':checked')) {
             $("#is_sms").val(1);
             $(".ta-content").html('<label class="col-md-3 col-xs-12 control-label">ISI PESAN</label><div class="col-md-9 col-xs-12"><textarea class="form-control input-content" rows="5" name="content" id="content"></textarea></div>');
-//            $('#respond-aduan').html('');
+
         } else {
             $("#is_sms").val(0);
             $(".ta-content").html("");
-//            $("#respond-aduan").html('<label class="col-md-3 col-xs-12 control-label">Respond Aduan</label><div class="col-md-9 col-xs-12"><textarea class="form-control" rows="5" name="desc" id="desc"></textarea></div>');
+
         }
     });
     $('#is_upload').on('change', function () {
@@ -522,48 +560,91 @@
                 });
             });
 
-            $("#respond-sms").on('hidden.bs.modal', function () {
-                dzClosure.removeAllFiles(true);
+            this.on("success", function (file, response) {
+                var obj = jQuery.parseJSON(response)
+                is_sms = $("#is_sms").val();
+                is_upload = $("#is_upload").val();
+                // alert(obj);
+                if (obj === 'success') {
+                    updateInbox($('.in_id').val(), 'responded', $('.responded').val(), $('.indate').val());
+                    if (is_sms == 1) {
+                        updateInbox($('.in_id').val(), 'replied', $('.replied').val(), $('.indate').val());
+                        var information = 'Pesan Telah dikirim ke ' + $('.receiver').val();
+                    } else {
+                        var information = 'Data Tindak Lanjut berhasil disimpan';
+                    }
+
+                    $('.success-sent').html(information);
+                    $('#respond-sms').hide();
+                    $('#message-box-success').toggleClass("open");
+
+
+                } else {
+                    if (is_sms == 1) {
+                        var information = 'Pengiriman SMS Tindak Lanjut ke ' + $('.receiver').val() + ' Gagal';
+
+                    } else {
+                        var information = 'Data Tindak Lanjut Gagal disimpan';
+                    }
+
+                    $('.failed-sent').html(information);
+                    $('#message-box-danger').toggleClass("open");
+                    $('#respond-sms').show();
+                }
+                this.removeAllFiles();
             });
+
         }
     });
 
     function submitMyFormWithData(url)
     {
         is_sms = $("#is_sms").val();
+        is_upload = $("#is_upload").val();
         var formData = $("#form-respond").serialize();
 
         $.ajax({
             url: url,
-            data: formData + '&is_sms=' + is_sms,
+            data: formData + '&is_sms=' + is_sms + '&is_upload=' + is_upload,
             dataType: 'json',
             async: false,
             type: 'POST',
             success: function (status) {
-               alert(status);
                 if (status == 'success') {
                     updateInbox($('.in_id').val(), 'responded', $('.responded').val(), $('.indate').val());
-                    var information = 'Pesan Telah dikirim ke ' + $('.receiver').val();
+                    if (is_sms == 1) {
+                        updateInbox($('.in_id').val(), 'replied', $('.replied').val(), $('.indate').val());
+                        var information = 'Pesan Telah dikirim ke ' + $('.receiver').val();
+                    } else {
+                        var information = 'Data Tindak Lanjut berhasil disimpan';
+                    }
+
                     $('.success-sent').html(information);
-                    $('.respond-sms').hide();
+                    $('#respond-sms').hide();
                     $('#message-box-success').toggleClass("open");
+
                 } else {
-                    var information = 'Pesan Gagal dikirim ke ' + $('.receiver').val();
+                    if (is_sms == 1) {
+                        var information = 'Pengiriman SMS Tindak Lanjut ke ' + $('.receiver').val() + ' Gagal';
+                    } else {
+                        var information = 'Data Tindak Lanjut Gagal disimpan';
+                    }
                     $('.failed-sent').html(information);
                     $('#message-box-danger').toggleClass("open");
+                    $('#respond-sms').show();
                 }
             }
         });
     }
 </script>
 <script>
-function updateInbox(id, status, prev_status, date) {
-    $.ajax({
-        type: 'POST',
-        url: '<?php echo base_url('service/updateInboxStatus'); ?>',
-        data: 'message_id= ' + id + '&status=' + status + '&prev_status=' + prev_status + '&indate=' + date,
-        dataType: 'json',
-        async: false,
-    });
-}
+    function updateInbox(id, status, prev_status, date) {
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo base_url('service/updateInboxStatus'); ?>',
+            data: 'message_id= ' + id + '&status=' + status + '&prev_status=' + prev_status + '&indate=' + date,
+            dataType: 'json',
+            async: false,
+        });
+    }
 </script>
