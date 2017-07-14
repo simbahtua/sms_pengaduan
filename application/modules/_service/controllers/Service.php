@@ -76,7 +76,6 @@ class Service extends Admin_Controller {
         /**
          * Search Individual Kolom
          */
-
         for ($i = 0; $i < $total_column; $i++) {
             $searchCol = $requestData['columns'][$i]['search']['value'];
             if ($searchCol != '') {
@@ -122,14 +121,14 @@ class Service extends Admin_Controller {
             $reply_status = '<img src="' . base_url() . '/assets/icons/' . $is_reply_image . '"/>';
             $respons_status = '<img src="' . base_url() . '/assets/icons/' . $is_respons_image . '"/>';
 
-             $action = ' <div class="btn-group">
+            $action = ' <div class="btn-group">
                              <button type="button" class="btn btn-success btn-sm" data-toggle="dropdown""><span class="caret"></span>&nbsp;PILIH AKSI &nbsp;</button>
                              <ul class="dropdown-menu" style="margin-left: -70px;">
                                  <li><a type="button" data-toggle="modal" data-target="#replysms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">BACA SMS</a></li>
                                  <li><a type="button" data-toggle="modal" data-target="#replysms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">BALAS SMS</a></li>
                                  <li><a type="button" data-toggle="modal" data-target="#respond-sms" data-senderphone ="' . $row->sender . '" data-id="' . $row->id . '" data-indatetime ="' . strtotime($row->indate) . '" data-content = "' . $row->content . '" data-readed="' . $row->readed . '" data-replied ="' . $row->replied . '" data-responded="' . $row->responded . '">TINDAK LANJUT</a></li>
-                                 <li><a type="button" onclick="delete_message('.$row->id.')">HAPUS INBOX</a></li>
-                                 <li><a href="'.base_url('print/'. strtotime($row->in_datetime)).'" target="_blank">PRINT</a></li>
+                                 <li><a type="button" onclick="delete_message(' . $row->id . ')">HAPUS INBOX</a></li>
+                                 <li><a href="' . base_url('print/' . strtotime($row->in_datetime)) . '" target="_blank">PRINT</a></li>
 
                              </ul>
                          </div>
@@ -149,7 +148,7 @@ class Service extends Admin_Controller {
                 $row->content,
                 $read_status,
                 $reply_status,
-                 $respons_status,
+                $respons_status,
                 $action
             );
             $json_data['data'][] = $entry;
@@ -188,7 +187,7 @@ class Service extends Admin_Controller {
         $data['out_datetime'] = date('Y-m-d H:i:s');
         if (!empty($data['content'])) {
             $zenziva_id = $this->send_sms($data);
-            if($zenziva_id != '') {
+            if ($zenziva_id != '') {
                 $data['z_outbox_id'] = $zenziva_id;
                 $this->db->insert('message_out', $data);
                 $send_sms = 'success';
@@ -299,7 +298,7 @@ class Service extends Admin_Controller {
         $sms_credit = $this->app_lib->zenziva_service(array('command' => 'credit'));
 
         if (!empty($sms_credit)) {
-            $info = (array)$sms_credit->credit;
+            $info = (array) $sms_credit->credit;
 
             $output['credit']['value'] = $info['value'];
             $output['credit']['activedate'] = $info['activedate'];
@@ -371,8 +370,8 @@ class Service extends Admin_Controller {
                     'receiver' => $this->input->post('receiver'), 'content' => $this->input->post('content'), 'out_type' => 'respond'
                 );
                 $save_respond = $this->send_sms($arr_data);
-            }else{
-                if($data['respond_text'] == '') {
+            } else {
+                if ($data['respond_text'] == '') {
                     $save_respond = false;
                 }
             }
@@ -413,6 +412,19 @@ class Service extends Admin_Controller {
                 } else {
                     $status = 'failed';
                 }
+
+                if ($is_sms) {
+                    $outbox['in_id'] = $this->input->post('in_id');
+                    $outbox['receiver'] = $this->input->post('receiver');
+                    $outbox['content'] = $this->input->post('content');
+                    $outbox['notes'] = $this->input->post('notes');
+                    $outbox['out_type'] = 'respons'; //
+                    $outbox['user_id'] = $this->session->userdata('user_id');
+                    $outbox['out_datetime'] = date('Y-m-d H:i:s');
+
+                    $this->db->insert('message_out', $data);
+                    $send_sms = 'success';
+                }
             }
         }
 
@@ -423,14 +435,14 @@ class Service extends Admin_Controller {
         $this->db->select('z_outbox_id, status,id');
         $this->db->where('is_updated', 0);
         $query = $this->db->get('message_out');
-        if($query->num_rows() >0 ){
-            foreach ($query->result() as $key => $sms_id ) {
+        if ($query->num_rows() > 0) {
+            foreach ($query->result() as $key => $sms_id) {
 
                 $params['command'] = 'report';
                 $params['id'] = $sms_id->z_outbox_id;
                 $zenziva_status = $this->app_lib->zenziva_service($params);
-                if(!empty($zenziva_status) && $zenziva_status->message->status != $sms_id->status) {
-                    $update = 'UPDATE message_out set status = "'.$zenziva_status->message->status.'" ,is_updated = 1 WHERE id = '.$sms_id->id;
+                if (!empty($zenziva_status) && $zenziva_status->message->status != $sms_id->status) {
+                    $update = 'UPDATE message_out set status = "' . $zenziva_status->message->status . '" ,is_updated = 1 WHERE id = ' . $sms_id->id;
                     $this->db->query($update);
                 }
             }
@@ -442,7 +454,7 @@ class Service extends Admin_Controller {
         $response = array();
 
         $detail = $this->app_lib->get_detail_data('message_in', 'id', $inbox_id);
-        if($detail->num_rows() > 0) {
+        if ($detail->num_rows() > 0) {
 
             $row = $detail->row();
             $date_time = explode(' ', $row->in_datetime);
@@ -451,33 +463,32 @@ class Service extends Admin_Controller {
             $reply_status = $row->replied;
             $responds_status = $row->responded;
 
-            $this->app_lib->delete_data('message_in','id', $inbox_id);
+            $this->app_lib->delete_data('message_in', 'id', $inbox_id);
 
             // Update summary inbox_id
             $sql_update = 'UPDATE inbox_report SET in_count = in_count - 1';
-            if($read_status == 1) {
+            if ($read_status == 1) {
                 $sql_update .= ', read_count = read_count -1';
             }
-            if($reply_status == 1) {
+            if ($reply_status == 1) {
                 $sql_update .= ', reply_count = reply_count -1';
             }
-            if($responds_status == 1) {
+            if ($responds_status == 1) {
                 $sql_update .= ', respons_count = respons_count -1';
             }
 
-            $sql_update .= ' WHERE message_date = "'.strtotime($date).'"';
+            $sql_update .= ' WHERE message_date = "' . strtotime($date) . '"';
             $updated = $this->db->query($sql_update);
 
-            if($updated) {
-                $this->app_lib->delete_data('message_in','id', $inbox_id);
+            if ($updated) {
+                $this->app_lib->delete_data('message_in', 'id', $inbox_id);
                 $response['status'] = true;
                 $response['message'] = 'Pesan Aduan Berhasil Dihapus';
-            }else {
+            } else {
                 $response['status'] = false;
                 $response['message'] = 'Pesan Aduan gagal dihapus';
             }
-
-        }else {
+        } else {
             $response['status'] = false;
             $response['message'] = 'Data Tidak Ditemukan';
         }
@@ -494,32 +505,31 @@ class Service extends Admin_Controller {
 
         $indatetime = $this->uri->segment(2);
 
-        if($indatetime != ''){
-            if( is_numeric($indatetime) && (int)$indatetime == $indatetime ) {
-                $indatetime = date('Y-m-d H:i:s' , $indatetime);
+        if ($indatetime != '') {
+            if (is_numeric($indatetime) && (int) $indatetime == $indatetime) {
+                $indatetime = date('Y-m-d H:i:s', $indatetime);
             }
         }
 
         $detail = $this->app_lib->get_detail_data("message_in", "in_datetime", $indatetime);
-        if($detail->num_rows() > 0) {
+        if ($detail->num_rows() > 0) {
             $data['detail'] = $detail->row();
         }
         themes('blank', 'sms/admin_print_inbox', $data);
     }
 
-
     function getUsers() {
         $params = isset($_POST) ? $_POST : array();
         $columns = array(
-                    'username',
-                    'name',
-                    // 'last_name',
-                    'email',
-                    'phone',
-                    'forward_status',
-                    'last_login',
-                    'description'
-                );
+            'username',
+            'name',
+            // 'last_name',
+            'email',
+            'phone',
+            'forward_status',
+            'last_login',
+            'description'
+        );
 
         $params['select'] = 'users.id as userID,CONCAT(first_name,last_name )as name,username , email,phone, forwarded,
         (CASE forwarded
@@ -528,7 +538,7 @@ class Service extends Admin_Controller {
         END
         ) as forward_status, avatar, last_login, description';
 
-        $where_detail = '' ;
+        $where_detail = '';
         $total_column = count($columns);
 
         if (isset($_POST['search']) && isset($_POST['search']['value']) && $_POST['search']['value'] != '') {
@@ -567,14 +577,14 @@ class Service extends Admin_Controller {
 
         header("Content-type: application/json");
         $json_data = array(
-                        'draw' => $_POST['draw'],
-                        'recordsTotal' => $query['total'],
-                        'recordsFiltered' => $query['total'],
-                        'data' => array()
-                    );
+            'draw' => $_POST['draw'],
+            'recordsTotal' => $query['total'],
+            'recordsFiltered' => $query['total'],
+            'data' => array()
+        );
         foreach ($query['data']->result() as $row) {
             //add html for action
-           $action = '<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_person('."'".$row->userID."'".')"><i class="glyphicon glyphicon-pencil"></i></a> <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person('."'".$row->userID."'".')"><i class="glyphicon glyphicon-trash"></i></a>';
+            $action = '<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_person(' . "'" . $row->userID . "'" . ')"><i class="glyphicon glyphicon-pencil"></i></a> <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person(' . "'" . $row->userID . "'" . ')"><i class="glyphicon glyphicon-trash"></i></a>';
 
             $entry = array(
                 $row->username,
@@ -594,11 +604,10 @@ class Service extends Admin_Controller {
         }
 
         echo json_encode($json_data);
-
     }
 
     function getUsersGroup() {
-
+        
     }
 
 }
