@@ -9,7 +9,6 @@
         display: table-header-group;
     }
 
-
     .modal-body{
         /*height: 250px;*/
         overflow-y: auto;
@@ -158,14 +157,12 @@
 <div class="page-content-wrap">
     <div class="row">
         <div class="col-md-12">
-
             <!-- START DEFAULT DATATABLE -->
             <div class="panel new-message panel-default">
                 <div class="panel-heading ui-draggable-handle">
                     <h2 class="panel-title"><span class="fa fa-envelope"></span> <?php echo $title; ?></h2>
                     <ul class="panel-controls">
                         <li><button class="button panel-refresh" data-toggle="tooltip" data-placement="top" title="Refresh"><span class="fa fa-refresh"></span></button></li>
-
                         <li><button class="button clear-filter" data-toggle="tooltip" data-placement="top" title="Clear Filter"><span class="fa fa-times"></span></button></li>
                     </ul>
                 </div>
@@ -200,11 +197,8 @@
             </div>
             <!-- END DEFAULT DATATABLE -->
         </div>
-
     </div>
-
 </div>
-
 
 <div class="message-box message-box-success animated fadeIn" id="message-box-success">
     <div class="mb-container">
@@ -292,7 +286,6 @@
             });
 
             $('select', this.footer()).on('change', function () {
-
                 if (that.search() !== this.value) {
                     that.search(this.value).draw();
                 }
@@ -353,10 +346,6 @@
         }
         onload();
         table.draw();
-//        table.state.save();
-//        table.stateSave(true)/draw();
-//         table.state.save();
-//        table.serverside();
     }
 
     $(function () {
@@ -371,8 +360,6 @@
     });
 
     function delete_message(inbox_id) {
-        // alert('Hapus Pesan ' + inbox_id);
-
         confirmation = confirm('Anda Yakin Akan Menghapus Pesan Ini?');
 
         if(confirmation) {
@@ -426,8 +413,7 @@
 <script>
     $(document).ready(function () {
         var panel = $(this).parents(".panel");
-        $('.modal').on('shown.bs.modal', function (event) { // id of the modal with event
-//            $('.modal-content').css('height', $(window).height() * 0.8);
+        $('.modal').on('shown.bs.modal', function (event) {
             $('.modal-body').css('height', $(window).height() * 0.6);
             button = $(event.relatedTarget); // Button that triggered the modal
             content = button.data('content');
@@ -468,7 +454,6 @@
             panel_refresh(panel);
         });
 
-
         $("#send-reply").click(function (e) {
             e.preventDefault();
             var form_data = $("#form-reply").serialize();
@@ -494,24 +479,19 @@
             });
         });
 
-
         $(".mb-control-close").on("click", function () {
             $(".message-box").removeClass("open");
             panel_refresh(panel);
-            return false;
         });
     });
-
 
     $('#is_sms').on('change', function () {
         if ($(this).is(':checked')) {
             $("#is_sms").val(1);
             $(".ta-content").html('<label class="col-md-3 col-xs-12 control-label">ISI PESAN</label><div class="col-md-9 col-xs-12"><textarea class="form-control input-content" rows="5" name="content" id="content"></textarea></div>');
-
         } else {
             $("#is_sms").val(0);
             $(".ta-content").html("");
-
         }
     });
     $('#is_upload').on('change', function () {
@@ -527,7 +507,6 @@
 </script>
 <script>
     Dropzone.autoDiscover = false;
-//    Dropzone.options.myAwesomeDropzone= {
     $("#my-awesome-dropzone").dropzone({
         removeAllFiles: true,
         url: '<?php echo base_url('service/act_respond'); ?>',
@@ -564,36 +543,30 @@
                 var obj = jQuery.parseJSON(response)
                 is_sms = $("#is_sms").val();
                 is_upload = $("#is_upload").val();
-                // alert(obj);
-                if (obj === 'success') {
+                if (obj == 'success') {
                     updateInbox($('.in_id').val(), 'responded', $('.responded').val(), $('.indate').val());
                     if (is_sms == 1) {
                         updateInbox($('.in_id').val(), 'replied', $('.replied').val(), $('.indate').val());
-                        var information = 'Pesan Telah dikirim ke ' + $('.receiver').val();
+                        information = 'Pesan Telah dikirim ke ' + $('.receiver').val();
                     } else {
-                        var information = 'Data Tindak Lanjut berhasil disimpan';
+                        information = 'Data Tindak Lanjut berhasil disimpan';
                     }
 
                     $('.success-sent').html(information);
                     $('#respond-sms').hide();
                     $('#message-box-success').toggleClass("open");
-
-
                 } else {
                     if (is_sms == 1) {
-                        var information = 'Pengiriman SMS Tindak Lanjut ke ' + $('.receiver').val() + ' Gagal';
-
+                        information = 'Pengiriman SMS Tindak Lanjut ke ' + $('.receiver').val() + ' Gagal';
                     } else {
-                        var information = 'Data Tindak Lanjut Gagal disimpan';
+                        information = 'Data Tindak Lanjut Gagal disimpan';
                     }
-
                     $('.failed-sent').html(information);
                     $('#message-box-danger').toggleClass("open");
                     $('#respond-sms').show();
                 }
                 this.removeAllFiles();
             });
-
         }
     });
 
@@ -622,7 +595,6 @@
                     $('.success-sent').html(information);
                     $('#respond-sms').hide();
                     $('#message-box-success').toggleClass("open");
-
                 } else {
                     if (is_sms == 1) {
                         var information = 'Pengiriman SMS Tindak Lanjut ke ' + $('.receiver').val() + ' Gagal';

@@ -13,6 +13,12 @@
     <div class="panel-body response-data">
         <div class="row">
             <div class="col-md-12">
+                <div class="alert alert-info" id='greeting'>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <div class="panel-title-box">
@@ -176,6 +182,20 @@
         }, 60000);
         $.ajaxSetup({cache: false});
         get_dashboard_info();
+
+        var open_greeting = '<h2>';
+        var close_greeting = '</h2>';
+        var user_data = '<?php echo $first_name .' '. $last_name;?>';
+        var greeting;
+        var jam = new Date().getHours();
+        var menit = new Date().getMinutes();
+        alert (jam + ' ' + menit);
+        if ( (jam <= 11 && menit == 0)) {
+            greeting = "Selamat Pagi ";
+        } else if ( (jam >= 10 && menit > 0)) {
+            greeting = "Selamat Siang ";
+        }
+        $('#greeting').html(open_greeting + greeting + user_data   + close_greeting);
     });
 
     function get_dashboard_info() {
@@ -210,7 +230,7 @@
             }
         })
     }
-    
+
     $(".panel-refresh").on("click", function () {
         var panel = $(this).parents(".panel");
         panel_refresh(panel);

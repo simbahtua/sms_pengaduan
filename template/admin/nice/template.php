@@ -39,12 +39,20 @@
                         <a href="#" class="x-navigation-control"></a>
                     </li>
                     <li class="xn-profile">
+                        <?php
+                            if($this->session->userdata('avatar') && $this->session->userdata('avatar') != '') {
+                                $image = $this->session->userdata('avatar');
+                            }else {
+                                $image = 'avatar.jpg';
+                            }
+                            $img_url = 'assets/images/users/'.$image;
+                        ?>
                         <a href="#" class="profile-mini">
-                            <img src="<?php echo base_url('assets/images/users/avatar.jpg'); ?>" alt="John Doe"/>
+                            <img src="<?php echo base_url($img_url); ?>" alt="John Doe"/>
                         </a>
                         <div class="profile">
                             <div class="profile-image">
-                                <img src="<?php echo base_url('assets/images/users/avatar.jpg'); ?>" alt="John Doe"/>
+                                <img src="<?php echo base_url($img_url); ?>" alt="John Doe"/>
                             </div>
                             <div class="profile-data">
                                 <!-- <div class="profile-data-name">John Doe</div>
@@ -65,6 +73,13 @@
                     </li>
                     <li>
                         <a href="<?php echo base_url('admin/sms/outbox') ?>"><span class="glyphicon glyphicon-send" data-toggle="tooltip" data-placement="right" title="OUTBOX"></span> <span class="xn-text">OUTBOX</span></a>
+                    </li>
+                    <li class="xn-openable">
+                        <a href="#"><span class="fa fa-cogs"></span> <span class="xn-text">Systems</span></a>
+                        <ul>
+                            <li><a href="<?php echo base_url('admin/_system/profile');?>"><span class="fa fa-user"></span>Profil</a></li>
+                            <li><a href="<?php echo base_url('admin/_system/password');?>"><span class="fa fa-key"></span>Ubah Password</a></li>
+                        </ul>
                     </li>
 
 
@@ -95,42 +110,6 @@
                         <a href="#" class="mb-control" data-box="#mb-signout"><span class="fa fa-sign-out"></span></a>
                     </li>
                     <!-- END SIGN OUT -->
-                    <!-- MESSAGES -->
-                    <!-- <li class="xn-icon-button pull-right">
-                        <a href="#"><span class="fa fa-comments"></span></a>
-                        <div class="informer informer-danger">4</div>
-                        <div class="panel panel-primary animated zoomIn xn-drop-left xn-panel-dragging">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><span class="fa fa-comments"></span> Messages</h3>
-                                <div class="pull-right">
-                                    <span class="label label-danger">4 new</span>
-                                </div>
-                            </div>
-
-                            <div class="panel-footer text-center">
-                                <a href="pages-messages.html">Show all messages</a>
-                            </div>
-                        </div>
-                    </li> -->
-                    <!-- END MESSAGES -->
-                    <!-- TASKS -->
-                    <!-- <li class="xn-icon-button pull-right">
-                        <a href="#"><span class="fa fa-tasks"></span></a>
-                        <div class="informer informer-warning">3</div>
-                        <div class="panel panel-primary animated zoomIn xn-drop-left xn-panel-dragging">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><span class="fa fa-tasks"></span> Tasks</h3>
-                                <div class="pull-right">
-                                    <span class="label label-warning">3 active</span>
-                                </div>
-                            </div>
-
-                            <div class="panel-footer text-center">
-                                <a href="pages-tasks.html">Show all tasks</a>
-                            </div>
-                        </div>
-                    </li> -->
-                    <!-- END TASKS -->
                 </ul>
                 <!-- END X-NAVIGATION VERTICAL -->
 
@@ -187,17 +166,11 @@
             </div>
         </div>
         <!-- END MESSAGE BOX-->
-
-        <!-- START PRELOADS -->
-        <!-- <audio id="audio-alert" src="audio/alert.mp3" preload="auto"></audio>
-        <audio id="audio-fail" src="audio/fail.mp3" preload="auto"></audio> -->
-        <!-- END PRELOADS -->
-
         <!-- START SCRIPTS -->
 
 
         <!-- START THIS PAGE PLUGINS-->
-        <!-- <script type='text/javascript' src='<?php echo $themes_url; ?>js/plugins/icheck/icheck.min.js'></script> -->
+        <script type='text/javascript' src='<?php echo $themes_url; ?>js/plugins/icheck/icheck.min.js'></script>
         <script type="text/javascript" src="<?php echo $themes_url; ?>js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js"></script>
         <script type="text/javascript" src="<?php echo $themes_url; ?>js/plugins/scrolltotop/scrolltopcontrol.js"></script>
         <!-- END THIS PAGE PLUGINS-->
@@ -207,11 +180,6 @@
 
         <script type="text/javascript" src="<?php echo $themes_url; ?>js/plugins.js"></script>
         <script type="text/javascript" src="<?php echo $themes_url; ?>js/actions.js"></script>
-
-        <!-- <script type="text/javascript" src="<?php echo $themes_url; ?>js/demo_dashboard.js"></script> -->
-        <!-- END TEMPLATE -->
-        <!-- END SCRIPTS -->
-
         <script>
             $(document).ready(function () {
                 setInterval(function () {
@@ -231,7 +199,6 @@
                     dataType: 'json',
                 });
             }
-
             function check_outbox() {
                 $.ajax({
                     type: 'POST',

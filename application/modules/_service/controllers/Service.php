@@ -201,7 +201,7 @@ class Service extends Admin_Controller {
     }
 
     function get_outbox_data() {
-        $this->lang->load('sms', 'ina');
+        $this->lang->load('sms');
 
         /** AJAX Handle */
         $requestData = $_REQUEST;
@@ -242,17 +242,13 @@ class Service extends Admin_Controller {
         for ($i = 0; $i < $total_column; $i++) {
             $searchCol = $requestData['columns'][$i]['search']['value'];
             if ($searchCol != '') {
-                // $where_detail = $columns[$i] . ' LIKE "%' . $searchCol . '%" ';
-                // break;
                 $where_detail .= $columns[$i] . ' LIKE "%' . $searchCol . '%" AND ';
             }
         }
 
         if ($where_detail != '') {
-            // $params['where_detail'] = $where_detail;
             $params['where_detail'] = rtrim($where_detail, ' AND ');
         }
-
 
         $sort = '';
         foreach ($_POST['order'] as $cols) {
@@ -443,11 +439,9 @@ class Service extends Admin_Controller {
 
     function act_delete() {
         $inbox_id = $this->input->post('id');
-        // echo $inbox_id;
         $response = array();
 
         $detail = $this->app_lib->get_detail_data('message_in', 'id', $inbox_id);
-        // print_r($detail);
         if($detail->num_rows() > 0) {
 
             $row = $detail->row();
@@ -457,7 +451,7 @@ class Service extends Admin_Controller {
             $reply_status = $row->replied;
             $responds_status = $row->responded;
 
-            // $this->app_lib->delete_data('message_in','id', $inbox_id);
+            $this->app_lib->delete_data('message_in','id', $inbox_id);
 
             // Update summary inbox_id
             $sql_update = 'UPDATE inbox_report SET in_count = in_count - 1';
@@ -470,8 +464,6 @@ class Service extends Admin_Controller {
             if($responds_status == 1) {
                 $sql_update .= ', respons_count = respons_count -1';
             }
-
-
 
             $sql_update .= ' WHERE message_date = "'.strtotime($date).'"';
             $updated = $this->db->query($sql_update);
@@ -489,7 +481,6 @@ class Service extends Admin_Controller {
             $response['status'] = false;
             $response['message'] = 'Data Tidak Ditemukan';
         }
-
         echo json_encode($response);
     }
 
@@ -514,6 +505,99 @@ class Service extends Admin_Controller {
             $data['detail'] = $detail->row();
         }
         themes('blank', 'sms/admin_print_inbox', $data);
+    }
+
+
+    function getUsers() {
+        $params = isset($_POST) ? $_POST : array();
+        $columns = array(
+                    'username',
+                    'name',
+                    // 'last_name',
+                    'email',
+                    'phone',
+                    'forward_status',
+                    'last_login',
+                    'description'
+                );
+
+        $params['select'] = 'users.id as userID,CONCAT(first_name,last_name )as name,username , email,phone, forwarded,
+        (CASE forwarded
+        WHEN 0 THEN "TIDAK"
+        ELSE "YA"
+        END
+        ) as forward_status, avatar, last_login, description';
+
+        $where_detail = '' ;
+        $total_column = count($columns);
+
+        if (isset($_POST['search']) && isset($_POST['search']['value']) && $_POST['search']['value'] != '') {
+            $search = $_POST['search']['value'];
+            for ($i = 0; $i < $total_column; $i++) {
+                $where_detail .= $columns[$i] . ' LIKE "%' . $search . '%"';
+                if ($i < $total_column - 1) {
+                    $where_detail .= ' OR ';
+                }
+            }
+        }
+
+        if ($where_detail != '') {
+            $params['where'] = rtrim($where_detail, ' AND ');
+        }
+        $sort = '';
+        foreach ($_POST['order'] as $cols) {
+            $sort .= $columns[$cols['column']] . ' ' . $cols['dir'] . ', ';
+        }
+        if ($sort == '') {
+            $sort = 'userID';
+        }
+        $sortorder = 'desc';
+        $params['sortname'] = rtrim($sort, ', ');
+        $params['sortorder'] = '';
+        $params['rp'] = isset($_POST['length']) ? $_POST['length'] : 10;
+
+        $params['page'] = $_POST['start'] > 0 ? ($_POST['start'] / $params['length']) + 1 : 1;
+
+        $params['table'] = 'users';
+        $params['join'] = 'INNER JOIN users_groups ON user_id = users.id
+        INNER JOIN groups ON groups.id = group_id
+        ';
+
+        $query = $this->app_lib->get_query_data($params);
+
+        header("Content-type: application/json");
+        $json_data = array(
+                        'draw' => $_POST['draw'],
+                        'recordsTotal' => $query['total'],
+                        'recordsFiltered' => $query['total'],
+                        'data' => array()
+                    );
+        foreach ($query['data']->result() as $row) {
+            //add html for action
+           $action = '<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_person('."'".$row->userID."'".')"><i class="glyphicon glyphicon-pencil"></i></a> <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_person('."'".$row->userID."'".')"><i class="glyphicon glyphicon-trash"></i></a>';
+
+            $entry = array(
+                $row->username,
+                $row->name,
+                // $row->last_name,
+                $row->email,
+                $row->phone,
+                $row->forward_status,
+                // $row->avatar,
+                ($row->last_login == '') ? ' - ' : date('Y-m-d H:i:s', $row->last_login),
+                $row->description,
+                $action
+            );
+
+
+            $json_data['data'][] = $entry;
+        }
+
+        echo json_encode($json_data);
+
+    }
+
+    function getUsersGroup() {
 
     }
 

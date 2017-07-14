@@ -1,5 +1,6 @@
 
 <?php
+if (!defined('BASEPATH')) exit('No direct script access allowed');
     if ( ! function_exists('themes'))
     {
         function  themes($user, $view='', $data=array())
@@ -22,15 +23,22 @@
 
                break;
 
+                case "blank":
+                    $template_files = 'blank';
+                break;
                default:
                    $template_folder = 'template/public/';
                    $template_files = 'template';
                    break;
            }
 
-           $data['themes_url'] = $CI->config->item('base_url') . $template_folder.'/';
-           $data['content_view'] = $view;
-           $CI->load->custom_view($template_folder.'/' , $template_files, $data);
+            if($template_files == 'blank') {
+                $CI->load->view($view, $data);
+            } else {
+               $data['themes_url'] = $CI->config->item('base_url') . $template_folder.'/';
+               $data['content_view'] = $view;
+               $CI->load->custom_view($template_folder.'/' , $template_files, $data);
+           }
 
         }
     }

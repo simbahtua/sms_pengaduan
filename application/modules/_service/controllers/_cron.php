@@ -11,6 +11,9 @@ class _cron extends MY_Controller {
     function __construct() {
         parent::__construct();
         $this->date = date('Y-m-d');
+
+        // $this->forward_to = array('085716838002','085643932008');
+        $this->forward_to = array('085643932008');
     }
 
     /* FUnction getInbox
@@ -61,7 +64,6 @@ class _cron extends MY_Controller {
             if ($inbox->message->text == 'Message empty') {
             $output['status'] = false;
         } else {
-                // $this->save_inbox($inbox);
                 $save = $this->save_inbox($inbox);
                 if ($save == '') {
                     $output['status'] = false;
@@ -72,12 +74,14 @@ class _cron extends MY_Controller {
         }else{
             $output['status'] = false;
         }
-
         echo json_encode($output);
     }
 
     // fungsi simpan sms yang baru
     function save_inbox($data = array(), $merge_date = false) {
+
+        // $forward_to  = array();
+        $forward_to = $this->get_forward_receiver();
         $status = '';
         if (!empty($data)) {
             $prev_date = '';
@@ -106,6 +110,7 @@ class _cron extends MY_Controller {
                     $message_date = $in_datetime[0];
                     $insert_data['in_datetime'] = $row->waktu;
                 }
+
                 $insert_data['content'] = preg_replace('/#aduan#/', '', $message_content);
 
                 $insert_id = $this->app_lib->insert_ignore_data($table, $insert_data);
@@ -117,7 +122,6 @@ class _cron extends MY_Controller {
                         }else {
                             $in_count = 1; $spam_count = 0;
                         }
-
                     }else{
                         if($is_spam) {
                             $spam_count++;
@@ -130,6 +134,17 @@ class _cron extends MY_Controller {
                     $arr_daily_data[strtotime($message_date)]['spam'] = $spam_count;
                 }
 
+                // forward sms
+                if(!empty($forward_to)) {
+                    foreach ($forward_to as $key => $value) {
+                        $params['command'] = 'sendsms';
+                        $params['tipe'] = 'reguler';
+                        $params['nohp'] =  $value;
+                        $params['pesan'] = preg_replace('/#aduan#/', '', $message_content);
+                        $resp = $this->app_lib->zenziva_service($params);
+                    }
+                }
+                
             }
 
             if(!empty($arr_daily_data)) {
@@ -156,7 +171,6 @@ class _cron extends MY_Controller {
     //fungsi auto reply format salah
     function autoreply($receiver, $message, $inbox_id) {
 
-        // die($receiver);
         $params['command'] = 'sendsms';
         $params['tipe'] = 'reguler';
         $params['nohp'] = '"' . $receiver . '"';
@@ -201,6 +215,23 @@ class _cron extends MY_Controller {
         $resp = $this->app_lib->zenziva_service($params);
         echo '<pre>';
         print_r($resp);
+    }
+
+
+    function get_forward_receiver() {
+        $data = array();
+        $this->db->select('phone');
+        $this->db->where('forwarded', 1);
+        $query = $this->db->get('users');
+        if($query->num_rows() > 0) {
+            foreach ($query->result() as $row) {
+                $data[] = $row->phone;
+            }
+        }
+
+        // die($data);
+        // print_r($data);
+        return $data;
     }
 
 }

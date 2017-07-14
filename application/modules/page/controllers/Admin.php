@@ -1,6 +1,4 @@
 <?php
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
 
 /**
  *
@@ -13,7 +11,7 @@ class Admin extends Admin_Controller
         parent::__construct();
     }
 
-    function __remap() {
-
+    function index() {
+        echo date('Y-m-d', 1497805200);
     }
 }
